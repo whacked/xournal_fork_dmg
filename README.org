@@ -1,4 +1,6 @@
-This fork was cloned from http://github.com/dmgerman/xournal
+useful risky enhancements to xournal based on dmgerman's fork (http://github.com/dmgerman/xournal)
+
+if you don't know what xournal is, it is currently the *only* open source note-taking software that has top-notch annotation facilities for pdfs (and images), that works on Windows, Mac, and Linux. It is the default pdf reader on all my machines. I have tried Skim (Mac), Okular (Lin/Win/Mac), and a few others. Nothing comes close in interop, customizability, and features. Plus, your notes are stored in xoj files that are simple to edit and save and sync.
 
 dmgerman added egg_find_toolbar to the original xournal that allows search. it would jump to the next page in the pdf that contains the word in the search field
 
