@@ -3862,7 +3862,28 @@ egg_find_bar_new1 (gchar *widget_name, gchar *string1, gchar *string2,
   return egg_find_bar_new();
 }
 
-// Display the pdf matches. Shoudl probably be moved to xo-misc.c 
+
+// FIXME !
+// FIXME !
+// FIXME !
+// FIXME !
+// MOVE THIS GLOBAL SOMEWHERE BETTER WHEN YOU ARE DONE!!!!!!!!!!
+struct Layer *searchLayer;
+void draw_text_match(PopplerRectangle * rect) {
+  //gnome_canvas_item_new(ui.cur_layer->group,
+  struct Item * searchItem = (struct Item *)g_malloc(sizeof(struct Item));                                                                                                                                                                         
+  searchItem->type = ITEM_SELECTRECT;
+  searchItem->path = NULL;
+
+  searchItem->canvas_item = gnome_canvas_item_new(searchLayer->group,
+      gnome_canvas_rect_get_type(), "width-pixels", 2, 
+      "fill-color-rgba", 0xffff0080,
+      "x1", rect->x1, "x2", rect->x2, "y1", rect->y1, "y2", rect->y2, NULL);
+  searchLayer->items = g_list_append(searchLayer->items, searchItem);
+  searchLayer->nitems++;
+}
+
+// Display the pdf matches. Should probably be moved to xo-misc.c 
 
 gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
 {
@@ -3872,6 +3893,47 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
   double width;
   GList *list;
   PopplerPage *pdfPage;
+
+  if(dodraw) {
+
+    printf("hello there - ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ \n");
+    end_text();
+    reset_selection();
+
+    searchLayer = g_new(struct Layer, 1);
+    searchLayer->items = NULL;
+    searchLayer->nitems = 0;
+    searchLayer->group = (GnomeCanvasGroup *) gnome_canvas_item_new( ui.cur_page->group, gnome_canvas_group_get_type(), NULL);
+    lower_canvas_item_to(ui.cur_page->group, GNOME_CANVAS_ITEM(searchLayer->group),
+      (ui.cur_layer!=NULL)?(GNOME_CANVAS_ITEM(ui.cur_layer->group)):(ui.cur_page->bg->canvas_item));
+
+    // necessary?
+    //update_page_stuff();
+
+  }
+  else {
+    // free searchLayer
+    printf(" testing searchLayer! -------------------> > > > > \n");
+    if(searchLayer != NULL) {
+      // not sure if it's exactly the same to call:
+      // delete_layer(searchLayer);
+      // and directly set searchLayer->nitems = 0;
+      struct Item * item;
+      GList *itemlist;
+      for(itemlist = searchLayer->items; itemlist != NULL; itemlist = itemlist->next) {
+        item = (struct Item *)itemlist->data;
+        gtk_object_destroy(GTK_OBJECT(item->canvas_item));
+        item->canvas_item = NULL;
+        g_free(item);
+        searchLayer->items = g_list_delete_link(searchLayer->items, searchLayer->items);
+        searchLayer->nitems--;
+        printf(" num in searchLayer: %d > > > > \n", searchLayer->nitems);
+      }
+      if (searchLayer->group!= NULL) gtk_object_destroy(GTK_OBJECT(searchLayer->group));
+      g_list_free(searchLayer->items);
+      g_free(searchLayer);
+    }
+  }
 
   // use dodraw = false if you just want to find out if there are matches
   
@@ -3904,106 +3966,10 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
              rect->y2/height);
       
       if(dodraw) {
-// <create_new_stroke>
-
-  ui.cur_item_type = ITEM_STROKE;
-  ui.cur_item = g_new(struct Item, 1);
-  ui.cur_item->type = ITEM_STROKE;
-  g_memmove(&(ui.cur_item->brush), ui.cur_brush, sizeof(struct Brush));
-  ui.cur_item->path = &ui.cur_path;
-  realloc_cur_path(2);
-  ui.cur_path.num_points = 1;
-  //get_pointer_coords(event, ui.cur_path.coords);
-  ui.cur_path.coords[0] = rect->x1;
-  ui.cur_path.coords[1] = rect->y1;
-  
-  ui.cur_item->canvas_item = gnome_canvas_item_new(
-    ui.cur_layer->group, gnome_canvas_group_get_type(), NULL);
-// </create_new_stroke>
-
-   // <continue_stroke>
-   GnomeCanvasPoints seg;
-   double current_width = 2.0; // highlight box width
-//  double pt[2];
-//  pt[0] = 40.0;
-//  pt[1] = 50.0;
-// 
-//   if (ui.cur_brush->ruler) {
-//     pt = ui.cur_path.coords;
-//   } else {
-//     realloc_cur_path(ui.cur_path.num_points+1);
-//     pt = ui.cur_path.coords + 2*(ui.cur_path.num_points-1);
-//   } 
-//   
-//   get_pointer_coords(event, pt+2);
-//   
-     ui.cur_path.num_points = 2;
- 
-     //double segpt[4] = {rect->x2, rect->y2};
-     double segpt[2] = {10.0, 20.0};
-   //seg.coords = pt; 
-   seg.coords = segpt; 
-   seg.num_points = 2;
-   seg.ref_count = 1;
-   
-   /* note: we're using a piece of the cur_path array. This is ok because
-      upon creation the line just copies the contents of the GnomeCanvasPoints
-      into an internal structure */
- 
-   gnome_canvas_item_set(ui.cur_item->canvas_item, "points", &seg, NULL);
-   // </continue_stroke>
-   // <finalize_stroke>
-   ui.cur_item->path = gnome_canvas_points_new(ui.cur_path.num_points);
-   g_memmove(ui.cur_item->path->coords, ui.cur_path.coords, 
-       2*ui.cur_path.num_points*sizeof(double));
-   ui.cur_item->widths = NULL;
-   update_item_bbox(ui.cur_item);
-   ui.cur_path.num_points = 0;
- 
-   // destroy the entire group of temporary line segments
-   gtk_object_destroy(GTK_OBJECT(ui.cur_item->canvas_item));
-   // make a new line item to replace it
-   make_canvas_item_one(ui.cur_layer->group, ui.cur_item);
-   
-  // add undo information
-  prepare_new_undo();
-  undo->type = ITEM_STROKE;
-  undo->item = ui.cur_item;
-  undo->layer = ui.cur_layer;
-
-   // store the item on top of the layer stack
-   ui.cur_layer->items = g_list_append(ui.cur_layer->items, ui.cur_item);
-   ui.cur_layer->nitems++;
-   ui.cur_item = NULL;
-   ui.cur_item_type = ITEM_NONE;
-   // </finalize_stroke>
-
-
-
-// <translucent box>
-if(ui.selection != NULL) {
-printf("\n\n\nNOT NULL\n\n\n");
-}
-else {
-printf("\n\n\n NULL NULL NULL NULL NULL NULL\n\n");
-
-}
-  gnome_canvas_item_new(ui.cur_layer->group,
-      gnome_canvas_rect_get_type(), "width-pixels", 2, 
-      "outline-color-rgba", 0x999900ff,
-      "fill-color-rgba", 0xffff0040,
-      "x1", rect->x1, "x2", rect->x2, "y1", rect->y1, "y2", rect->y2, NULL);
-
-// </translucent box>
-
-
-
-
-
-
-   } // /if(dodraw)
-
-
+printf(" ----------------------------------------------------- draw text match\n");
+printf(" ----------------------------------------------------- draw text match\n");
+        draw_text_match(rect);
+      } // /if(dodraw)
     }
   } else {
     printf("Page %d has no match\n", searchedPage+1);
