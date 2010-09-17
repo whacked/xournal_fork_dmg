@@ -236,6 +236,10 @@ on_toolsSelectRectangle_activate       (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
 void
+on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
 on_toolsVerticalSpace_activate         (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
@@ -524,6 +528,10 @@ on_button2SelectRectangle_activate     (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
 void
+on_button2SelectText_activate     (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
 on_button2VerticalSpace_activate       (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
@@ -557,6 +565,10 @@ on_button3SelectRegion_activate        (GtkMenuItem     *menuitem,
 
 void
 on_button3SelectRectangle_activate     (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
+on_button3SelectText_activate     (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
 void

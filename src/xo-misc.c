@@ -958,6 +958,10 @@ void update_tool_buttons(void)
       gtk_toggle_tool_button_set_active(
         GTK_TOGGLE_TOOL_BUTTON(GET_COMPONENT("buttonSelectRectangle")), TRUE);
       break;
+    case TOOL_SELECTTEXT:
+      gtk_toggle_tool_button_set_active(
+        GTK_TOGGLE_TOOL_BUTTON(GET_COMPONENT("buttonSelectText")), TRUE);
+      break;
     case TOOL_VERTSPACE:
       gtk_toggle_tool_button_set_active(
         GTK_TOGGLE_TOOL_BUTTON(GET_COMPONENT("buttonVerticalSpace")), TRUE);
@@ -1005,6 +1009,10 @@ void update_tool_menu(void)
     case TOOL_SELECTRECT:
       gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(GET_COMPONENT("toolsSelectRectangle")), TRUE);
+      break;
+    case TOOL_SELECTTEXT:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("toolsSelectText")), TRUE);
       break;
     case TOOL_VERTSPACE:
       gtk_check_menu_item_set_active(
@@ -1236,6 +1244,10 @@ void update_mappings_menu(void)
       gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(GET_COMPONENT("button2SelectRectangle")), TRUE);
       break;
+    case TOOL_SELECTTEXT:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("button2SelectText")), TRUE);
+      break;
     case TOOL_VERTSPACE:
       gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(GET_COMPONENT("button2VerticalSpace")), TRUE);
@@ -1265,6 +1277,10 @@ void update_mappings_menu(void)
     case TOOL_SELECTRECT:
       gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(GET_COMPONENT("button3SelectRectangle")), TRUE);
+      break;
+    case TOOL_SELECTTEXT:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("button3SelectText")), TRUE);
       break;
     case TOOL_VERTSPACE:
       gtk_check_menu_item_set_active(
@@ -2071,6 +2087,8 @@ void allow_all_accels(void)
 /*  g_signal_connect((gpointer) GET_COMPONENT("toolsSelectRegion"),
       "can-activate-accel", G_CALLBACK(can_accel), NULL);  */
   g_signal_connect((gpointer) GET_COMPONENT("toolsSelectRectangle"),
+      "can-activate-accel", G_CALLBACK(can_accel), NULL);
+  g_signal_connect((gpointer) GET_COMPONENT("toolsSelectText"),
       "can-activate-accel", G_CALLBACK(can_accel), NULL);
   g_signal_connect((gpointer) GET_COMPONENT("toolsVerticalSpace"),
       "can-activate-accel", G_CALLBACK(can_accel), NULL);

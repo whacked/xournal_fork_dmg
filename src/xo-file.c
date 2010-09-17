@@ -26,7 +26,7 @@
 #include "xo-file.h"
 #include "xo-paint.h"
 
-const char *tool_names[NUM_TOOLS] = {"pen", "eraser", "highlighter", "text", "", "selectrect", "vertspace", "hand"};
+const char *tool_names[NUM_TOOLS] = {"pen", "eraser", "highlighter", "text", "", "selectrect", "vertspace", "hand", "selecttext"};
 const char *color_names[COLOR_MAX] = {"black", "blue", "red", "green",
    "gray", "lightblue", "lightgreen", "magenta", "orange", "yellow", "white"};
 const char *bgtype_names[3] = {"solid", "pixmap", "pdf"};
@@ -1652,7 +1652,7 @@ void save_config_to_file(void)
     g_strdup_printf("%d", PDFTOPPM_PRINTING_DPI));
 
   update_keyval("tools", "startup_tool",
-    _(" selected tool at startup (pen, eraser, highlighter, selectrect, vertspace, hand)"),
+    _(" selected tool at startup (pen, eraser, highlighter, selectrect, vertspace, hand, selecttext)"),
     g_strdup(tool_names[ui.startuptool]));
   update_keyval("tools", "pen_color",
     _(" default pen color"),
@@ -1689,7 +1689,7 @@ void save_config_to_file(void)
     _(" default highlighter is in shape recognizer mode (true/false)"),
     g_strdup(ui.default_brushes[TOOL_HIGHLIGHTER].recognizer?"true":"false"));
   update_keyval("tools", "btn2_tool",
-    _(" button 2 tool (pen, eraser, highlighter, text, selectrect, vertspace, hand)"),
+    _(" button 2 tool (pen, eraser, highlighter, text, selectrect, vertspace, hand, selecttext)"),
     g_strdup(tool_names[ui.toolno[1]]));
   update_keyval("tools", "btn2_linked",
     _(" button 2 brush linked to primary brush (true/false) (overrides all other settings)"),
@@ -1717,7 +1717,7 @@ void save_config_to_file(void)
     _(" button 2 eraser mode (eraser only)"),
     g_strdup_printf("%d", ui.brushes[1][TOOL_ERASER].tool_options));
   update_keyval("tools", "btn3_tool",
-    _(" button 3 tool (pen, eraser, highlighter, text, selectrect, vertspace, hand)"),
+    _(" button 3 tool (pen, eraser, highlighter, text, selectrect, vertspace, hand, selecttext)"),
     g_strdup(tool_names[ui.toolno[2]]));
   update_keyval("tools", "btn3_linked",
     _(" button 3 brush linked to primary brush (true/false) (overrides all other settings)"),

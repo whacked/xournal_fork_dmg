@@ -94,6 +94,9 @@ void update_cursor(void)
   else if (ui.cur_item_type == ITEM_SELECTRECT) {
     ui.cursor = gdk_cursor_new(GDK_TCROSS);
   }
+  else if (ui.cur_item_type == ITEM_SELECTTEXT) {
+    ui.cursor = gdk_cursor_new(GDK_TCROSS);
+  }
   else if (ui.toolno[ui.cur_mapping] == TOOL_HAND) {
     ui.cursor = gdk_cursor_new(GDK_HAND1);
   }
@@ -180,6 +183,9 @@ void subdivide_cur_path(null)
 
 void create_new_stroke(GdkEvent *event)
 {
+    // reset search status
+    ui.searching_page = -1;
+    
   ui.cur_item_type = ITEM_STROKE;
   ui.cur_item = g_new(struct Item, 1);
   ui.cur_item->type = ITEM_STROKE;
@@ -491,6 +497,32 @@ void start_selectrect(GdkEvent *event)
   update_cursor();
 }
 
+void start_selecttext(GdkEvent *event)
+{
+    printf("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n");
+    printf("I am in YOUR SELECT TEXT!!!!!!!!!!!\n");
+    printf("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n");
+  double pt[2];
+  reset_selection();
+  
+  ui.cur_item_type = ITEM_SELECTTEXT;
+  ui.selection = g_new(struct Selection, 1);
+  ui.selection->type = ITEM_SELECTTEXT;
+  ui.selection->items = NULL;
+  ui.selection->layer = ui.cur_layer;
+
+  get_pointer_coords(event, pt);
+  ui.selection->bbox.left = ui.selection->bbox.right = pt[0];
+  ui.selection->bbox.top = ui.selection->bbox.bottom = pt[1];
+ 
+  ui.selection->canvas_item = gnome_canvas_item_new(ui.cur_layer->group,
+      gnome_canvas_rect_get_type(), "width-pixels", 1, 
+      "outline-color-rgba", 0x000099ff,
+      "fill-color-rgba", 0x40409040,
+      "x1", pt[0], "x2", pt[0], "y1", pt[1], "y2", pt[1], NULL);
+  update_cursor();
+}
+
 void finalize_selectrect(void)
 {
   double x1, x2, y1, y2;
@@ -541,6 +573,68 @@ void finalize_selectrect(void)
   update_font_button();
 }
 
+void finalize_selecttext(void)
+{
+  double x1, x2, y1, y2;
+  struct Item *item;
+
+  
+  ui.cur_item_type = ITEM_NONE;
+
+  if (ui.selection->bbox.left > ui.selection->bbox.right) {
+    x1 = ui.selection->bbox.right;  x2 = ui.selection->bbox.left;
+    ui.selection->bbox.left = x1;   ui.selection->bbox.right = x2;
+  } else {
+    x1 = ui.selection->bbox.left;  x2 = ui.selection->bbox.right;
+  }
+
+  if (ui.selection->bbox.top > ui.selection->bbox.bottom) {
+    y1 = ui.selection->bbox.bottom;  y2 = ui.selection->bbox.top;
+    ui.selection->bbox.top = y1;   ui.selection->bbox.bottom = y2;
+  } else {
+    y1 = ui.selection->bbox.top;  y2 = ui.selection->bbox.bottom;
+  }
+
+  printf("i am getting the selection now . . . . . i am getting the selection now . . . . .i am getting the selection now . . . . .i am getting the selection now . . . . .\n\n");
+  PopplerPage *pdfPage;
+  pdfPage = poppler_document_get_page(bgpdf.document, ui.pageno);
+  double pg_wd, pg_ht;
+  poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
+  // y1 and y2 seem to be inverted coordinate system than GTK canvas bounding box
+  PopplerRectangle selectRect = { x1, pg_ht - y1, x2, pg_ht - y2 };
+  //PopplerRectangle selectRect = { 173.488434, 676.994867, 234.984334, 710.492634 };
+
+  // poppler_page_get_text has strange behavior:
+  // if nothing is in the selection box,
+  // if there is something in the same vertical line (same x value),
+  // it seems to pick up an entire block of text
+  
+  // in v0.16 use poppler_page_get_selected_text()
+  char * selectedText = poppler_page_get_text(pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+
+  if (strlen(selectedText) == 0) {
+      printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
+      reset_selection();
+  }
+  else {
+      printf("got . . . . .   . . . . . . . . . . . . . . . . . . . . . .\n\n");
+      printf("my string: %s\n", selectedText);
+      printf("\ngot . . . . .   . . . . . . . . . . . . . . . . . . . . . .\n");
+      make_dashed(ui.selection->canvas_item);
+      // copy to clipboard
+      // ref: http://www.deskchecked.com/2007/06/27/passing-data-between-gtk-applications-with-gtkclipboard/
+      /* set the clipboard text */
+      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), selectedText, strlen(selectedText));
+
+      /* store the clipboard text */
+      // seems to store to clipboard without this function. leaving here just in case
+      //gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+  }
+  update_cursor();
+  update_copy_paste_enabled();
+  update_font_button();
+}
+
 gboolean start_movesel(GdkEvent *event)
 {
   double pt[2];
@@ -564,6 +658,24 @@ gboolean start_movesel(GdkEvent *event)
     update_cursor();
     return TRUE;
   }
+  else if (ui.selection->type == ITEM_SELECTTEXT) {
+      printf(" - - - - - \n");
+      printf("   user is attempting to move the box\n");
+      printf(" - - - - - \n");
+    //if (pt[0]<ui.selection->bbox.left || pt[0]>ui.selection->bbox.right ||
+    //    pt[1]<ui.selection->bbox.top  || pt[1]>ui.selection->bbox.bottom)
+    //  return FALSE;
+    //ui.cur_item_type = ITEM_MOVESEL;
+    //ui.selection->anchor_x = ui.selection->last_x = pt[0];
+    //ui.selection->anchor_y = ui.selection->last_y = pt[1];
+    //ui.selection->orig_pageno = ui.pageno;
+    //ui.selection->move_pageno = ui.pageno;
+    //ui.selection->move_layer = ui.selection->layer;
+    //ui.selection->move_pagedelta = 0.;
+    //gnome_canvas_item_set(ui.selection->canvas_item, "dash", NULL, NULL);
+    //update_cursor();
+    //return TRUE;
+  }
   return FALSE;
 }
 
@@ -577,6 +689,40 @@ gboolean start_resizesel(GdkEvent *event)
   get_pointer_coords(event, pt);
 
   if (ui.selection->type == ITEM_SELECTRECT) {
+    resize_margin = RESIZE_MARGIN/ui.zoom;
+    hmargin = (ui.selection->bbox.right-ui.selection->bbox.left)*0.3;
+    if (hmargin>resize_margin) hmargin = resize_margin;
+    vmargin = (ui.selection->bbox.bottom-ui.selection->bbox.top)*0.3;
+    if (vmargin>resize_margin) vmargin = resize_margin;
+
+    // make sure the click is within a box slightly bigger than the selection rectangle
+    if (pt[0]<ui.selection->bbox.left-resize_margin || 
+        pt[0]>ui.selection->bbox.right+resize_margin ||
+        pt[1]<ui.selection->bbox.top-resize_margin || 
+        pt[1]>ui.selection->bbox.bottom+resize_margin)
+      return FALSE;
+
+    // now, if the click is near the edge, it's a resize operation
+    // keep track of which edges we're close to, since those are the ones which should move
+    ui.selection->resizing_left = (pt[0]<ui.selection->bbox.left+hmargin);
+    ui.selection->resizing_right = (pt[0]>ui.selection->bbox.right-hmargin);
+    ui.selection->resizing_top = (pt[1]<ui.selection->bbox.top+vmargin);
+    ui.selection->resizing_bottom = (pt[1]>ui.selection->bbox.bottom-vmargin);
+
+    // we're not near any edge, give up
+    if (!(ui.selection->resizing_left || ui.selection->resizing_right ||
+          ui.selection->resizing_top  || ui.selection->resizing_bottom)) 
+      return FALSE;
+
+    ui.cur_item_type = ITEM_RESIZESEL;
+    ui.selection->new_y1 = ui.selection->bbox.top;
+    ui.selection->new_y2 = ui.selection->bbox.bottom;
+    ui.selection->new_x1 = ui.selection->bbox.left;
+    ui.selection->new_x2 = ui.selection->bbox.right;
+    gnome_canvas_item_set(ui.selection->canvas_item, "dash", NULL, NULL);
+    update_cursor_for_resize(pt);
+    return TRUE;
+  } else if (ui.selection->type == ITEM_SELECTTEXT) {
     resize_margin = RESIZE_MARGIN/ui.zoom;
     hmargin = (ui.selection->bbox.right-ui.selection->bbox.left)*0.3;
     if (hmargin>resize_margin) hmargin = resize_margin;
@@ -995,6 +1141,7 @@ void clipboard_paste(void)
   ui.selection = g_new(struct Selection, 1);
   p = sel_data->data + sizeof(int);
   g_memmove(&nitems, p, sizeof(int)); p+= sizeof(int);
+  // asdf: found this in doing selectrect replace. it probably isn't relevant for selecttext
   ui.selection->type = ITEM_SELECTRECT;
   ui.selection->layer = ui.cur_layer;
   g_memmove(&ui.selection->bbox, p, sizeof(struct BBox)); p+= sizeof(struct BBox);

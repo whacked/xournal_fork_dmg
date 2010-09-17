@@ -2,7 +2,7 @@
 #include <libgnomecanvas/libgnomecanvas.h>
 #include <poppler/glib/poppler.h>
 
-// #define INPUT_DEBUG
+#define INPUT_DEBUG
 /* uncomment this line if you experience event-processing problems
    and want to list the input events received by xournal. Caution, lots
    of output (redirect to a file). */
@@ -122,9 +122,12 @@ extern guint predef_bgcolors_rgba[COLOR_MAX];
 #define TOOL_SELECTRECT   5
 #define TOOL_VERTSPACE    6
 #define TOOL_HAND         7
-#define TOOL_IMAGE	8
+#define TOOL_IMAGE        8
+
+#define TOOL_SELECTTEXT   9
+
 #define NUM_STROKE_TOOLS  3
-#define NUM_TOOLS         8
+#define NUM_TOOLS         9
 #define NUM_BUTTONS       3
 
 #define TOOLOPT_ERASER_STANDARD     0
@@ -186,6 +189,7 @@ typedef struct Item {
 #define ITEM_RESIZESEL 22
 #define ITEM_RECOGNIZER 23
 #define ITEM_IMAGE 24
+#define ITEM_SELECTTEXT 25
 
 typedef struct Layer {
   GList *items; // the items on the layer, from bottom to top
@@ -209,7 +213,7 @@ typedef struct Journal {
 } Journal;
 
 typedef struct Selection {
-  int type;  // ITEM_SELECTRECT, ITEM_MOVESEL_VERT
+  int type;  // ITEM_SELECTRECT, ITEM_MOVESEL_VERT, ITEM_SELECTTEXT
   BBox bbox; // the rectangle bbox of the selection
   struct Layer *layer; // the layer on which the selection lives
   double anchor_x, anchor_y, last_x, last_y; // for selection motion
@@ -223,6 +227,8 @@ typedef struct Selection {
 } Selection;
 
 typedef struct UIData {
+  int searching_page; // marks the current page we are searching
+
   int pageno, layerno; // the current page and layer
   struct Page *cur_page;
   struct Layer *cur_layer;

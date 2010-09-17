@@ -1992,6 +1992,33 @@ on_toolsSelectRectangle_activate       (GtkMenuItem     *menuitem,
 }
 
 
+
+void
+on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  if (GTK_OBJECT_TYPE(menuitem) == GTK_TYPE_RADIO_MENU_ITEM) {
+    if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM (menuitem)))
+      return;
+  } else {
+    if (!gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON (menuitem)))
+      return;
+  }
+  
+  if (ui.cur_mapping != 0 && !ui.button_switch_mapping) return; // not user-generated
+  if (ui.toolno[ui.cur_mapping] == TOOL_SELECTTEXT) return;
+  
+  ui.cur_mapping = 0; // don't use switch_mapping() (refreshes buttons too soon)
+  end_text();
+  ui.toolno[ui.cur_mapping] = TOOL_SELECTTEXT;
+  update_mapping_linkings(-1);
+  update_tool_buttons();
+  update_tool_menu();
+  update_color_menu();
+  update_cursor();
+}
+
+
 void
 on_toolsVerticalSpace_activate         (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
@@ -2668,7 +2695,7 @@ on_canvas_button_press_event           (GtkWidget       *widget,
   if (start_resizesel((GdkEvent *)event)) return FALSE;
   if (start_movesel((GdkEvent *)event)) return FALSE;
   
-  if (ui.toolno[mapping] != TOOL_SELECTREGION && ui.toolno[mapping] != TOOL_SELECTRECT)
+  if (ui.toolno[mapping] != TOOL_SELECTREGION && ui.toolno[mapping] != TOOL_SELECTRECT && ui.toolno[mapping] != TOOL_SELECTTEXT)
     reset_selection();
 
   // process the event
@@ -2690,6 +2717,9 @@ on_canvas_button_press_event           (GtkWidget       *widget,
   }
   else if (ui.toolno[mapping] == TOOL_SELECTRECT) {
     start_selectrect((GdkEvent *)event);
+  }
+  else if (ui.toolno[mapping] == TOOL_SELECTTEXT) {
+    start_selecttext((GdkEvent *)event);
   }
   else if (ui.toolno[mapping] == TOOL_VERTSPACE) {
     start_vertspace((GdkEvent *)event);
@@ -2734,6 +2764,9 @@ on_canvas_button_release_event         (GtkWidget       *widget,
   }
   else if (ui.cur_item_type == ITEM_SELECTRECT) {
     finalize_selectrect();
+  }
+  else if (ui.cur_item_type == ITEM_SELECTTEXT) {
+    finalize_selecttext();
   }
   else if (ui.cur_item_type == ITEM_MOVESEL || ui.cur_item_type == ITEM_MOVESEL_VERT) {
     finalize_movesel();
@@ -2916,6 +2949,9 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
     else if (ui.cur_item_type == ITEM_SELECTRECT) {
       finalize_selectrect();
     }
+    else if (ui.cur_item_type == ITEM_SELECTTEXT) {
+      finalize_selecttext();
+    }
     else if (ui.cur_item_type == ITEM_MOVESEL || ui.cur_item_type == ITEM_MOVESEL_VERT) {
       finalize_movesel();
     }
@@ -2934,6 +2970,13 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
                ui.cur_brush->tool_options == TOOLOPT_ERASER_STROKES);
   }
   else if (ui.cur_item_type == ITEM_SELECTRECT) {
+    get_pointer_coords((GdkEvent *)event, pt);
+    ui.selection->bbox.right = pt[0];
+    ui.selection->bbox.bottom = pt[1];
+    gnome_canvas_item_set(ui.selection->canvas_item,
+                               "x2", pt[0], "y2", pt[1], NULL);
+  }
+  else if (ui.cur_item_type == ITEM_SELECTTEXT) {
     get_pointer_coords((GdkEvent *)event, pt);
     ui.selection->bbox.right = pt[0];
     ui.selection->bbox.bottom = pt[1];
@@ -3392,6 +3435,14 @@ on_button2SelectRectangle_activate     (GtkMenuItem     *menuitem,
 
 
 void
+on_button2SelectText_activate     (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  process_mapping_activate(menuitem, 1, TOOL_SELECTTEXT);
+}
+
+
+void
 on_button2VerticalSpace_activate       (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
@@ -3473,6 +3524,14 @@ on_button3SelectRectangle_activate     (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
   process_mapping_activate(menuitem, 2, TOOL_SELECTRECT);
+}
+
+
+void
+on_button3SelectText_activate     (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  process_mapping_activate(menuitem, 2, TOOL_SELECTTEXT);
 }
 
 
@@ -3805,7 +3864,7 @@ egg_find_bar_new1 (gchar *widget_name, gchar *string1, gchar *string2,
 
 // Display the pdf matches. Shoudl probably be moved to xo-misc.c 
 
-gboolean find_pdf_matches(const char *st, int searchedPage)
+gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
 {
   GList *l;
   int matches = 0 ;
@@ -3813,6 +3872,8 @@ gboolean find_pdf_matches(const char *st, int searchedPage)
   double width;
   GList *list;
   PopplerPage *pdfPage;
+
+  // use dodraw = false if you just want to find out if there are matches
   
   pdfPage = poppler_document_get_page(bgpdf.document, searchedPage);
   if (pdfPage == NULL) {
@@ -3841,6 +3902,106 @@ gboolean find_pdf_matches(const char *st, int searchedPage)
              rect->y1/height,
              rect->x2/width,
              rect->y2/height);
+      
+      if(dodraw) {
+// <create_new_stroke>
+
+  ui.cur_item_type = ITEM_STROKE;
+  ui.cur_item = g_new(struct Item, 1);
+  ui.cur_item->type = ITEM_STROKE;
+  g_memmove(&(ui.cur_item->brush), ui.cur_brush, sizeof(struct Brush));
+  ui.cur_item->path = &ui.cur_path;
+  realloc_cur_path(2);
+  ui.cur_path.num_points = 1;
+  //get_pointer_coords(event, ui.cur_path.coords);
+  ui.cur_path.coords[0] = rect->x1;
+  ui.cur_path.coords[1] = rect->y1;
+  
+  ui.cur_item->canvas_item = gnome_canvas_item_new(
+    ui.cur_layer->group, gnome_canvas_group_get_type(), NULL);
+// </create_new_stroke>
+
+   // <continue_stroke>
+   GnomeCanvasPoints seg;
+   double current_width = 2.0; // highlight box width
+//  double pt[2];
+//  pt[0] = 40.0;
+//  pt[1] = 50.0;
+// 
+//   if (ui.cur_brush->ruler) {
+//     pt = ui.cur_path.coords;
+//   } else {
+//     realloc_cur_path(ui.cur_path.num_points+1);
+//     pt = ui.cur_path.coords + 2*(ui.cur_path.num_points-1);
+//   } 
+//   
+//   get_pointer_coords(event, pt+2);
+//   
+     ui.cur_path.num_points = 2;
+ 
+     //double segpt[4] = {rect->x2, rect->y2};
+     double segpt[2] = {10.0, 20.0};
+   //seg.coords = pt; 
+   seg.coords = segpt; 
+   seg.num_points = 2;
+   seg.ref_count = 1;
+   
+   /* note: we're using a piece of the cur_path array. This is ok because
+      upon creation the line just copies the contents of the GnomeCanvasPoints
+      into an internal structure */
+ 
+   gnome_canvas_item_set(ui.cur_item->canvas_item, "points", &seg, NULL);
+   // </continue_stroke>
+   // <finalize_stroke>
+   ui.cur_item->path = gnome_canvas_points_new(ui.cur_path.num_points);
+   g_memmove(ui.cur_item->path->coords, ui.cur_path.coords, 
+       2*ui.cur_path.num_points*sizeof(double));
+   ui.cur_item->widths = NULL;
+   update_item_bbox(ui.cur_item);
+   ui.cur_path.num_points = 0;
+ 
+   // destroy the entire group of temporary line segments
+   gtk_object_destroy(GTK_OBJECT(ui.cur_item->canvas_item));
+   // make a new line item to replace it
+   make_canvas_item_one(ui.cur_layer->group, ui.cur_item);
+   
+  // add undo information
+  prepare_new_undo();
+  undo->type = ITEM_STROKE;
+  undo->item = ui.cur_item;
+  undo->layer = ui.cur_layer;
+
+   // store the item on top of the layer stack
+   ui.cur_layer->items = g_list_append(ui.cur_layer->items, ui.cur_item);
+   ui.cur_layer->nitems++;
+   ui.cur_item = NULL;
+   ui.cur_item_type = ITEM_NONE;
+   // </finalize_stroke>
+
+
+
+// <translucent box>
+if(ui.selection != NULL) {
+printf("\n\n\nNOT NULL\n\n\n");
+}
+else {
+printf("\n\n\n NULL NULL NULL NULL NULL NULL\n\n");
+
+}
+  gnome_canvas_item_new(ui.cur_layer->group,
+      gnome_canvas_rect_get_type(), "width-pixels", 2, 
+      "outline-color-rgba", 0x999900ff,
+      "fill-color-rgba", 0xffff0040,
+      "x1", rect->x1, "x2", rect->x2, "y1", rect->y1, "y2", rect->y2, NULL);
+
+// </translucent box>
+
+
+
+
+
+
+   } // /if(dodraw)
 
 
     }
@@ -3880,17 +4041,24 @@ on_find_bar_next                       (GtkWidget       *widget,
 
       searchedPage = iCurrentPage;
       for (i=0; nextPage == -1 && i< nPages; i++) {
-        // we move one page forward
-        searchedPage++;
-        // Roll to the beginning if we hit end of doc
-        if (searchedPage >= nPages) {
-          searchedPage = 0;
-        }
-        // do not process the current page
-        if (searchedPage == iCurrentPage)
-          continue;
+          printf(" >>>>>>>>>>>>>>> ui.searching_page is now: %d", ui.searching_page);
+          if(ui.searching_page == -1) {
+          }
+          else {
+            // i moved this here, used to be at the first statement inside for loop
+            // we move one page forward
+            searchedPage++;
+            // do not process the current page
+            if (searchedPage == iCurrentPage)
+              continue;
+            // Roll to the beginning if we hit end of doc
+            if (searchedPage >= nPages) {
+              searchedPage = 0;
+            }
+          }
+          ui.searching_page = searchedPage;
         // Find and print
-        if ((matches = find_pdf_matches(st, searchedPage)) > 0) {
+        if ((matches = find_pdf_matches(st, searchedPage, FALSE)) > 0) {
           nextPage = searchedPage;
         }
       } // end of for loop
@@ -3899,6 +4067,7 @@ on_find_bar_next                       (GtkWidget       *widget,
         // we have a next page.
         printf("Jumping to page %d\n", nextPage+1);
         do_switch_page(nextPage, TRUE, FALSE);
+        find_pdf_matches(st, searchedPage, TRUE);
         egg_find_bar_set_status_text(findBar, temp);
       } else {
         // Not present
@@ -3961,7 +4130,7 @@ on_find_bar_prev                       (GtkWidget       *widget,
         if (searchedPage == iCurrentPage)
           continue;
 
-        if ((matches = find_pdf_matches(st, searchedPage)) > 0) {
+        if ((matches = find_pdf_matches(st, searchedPage, FALSE)) > 0) {
           prevPage = searchedPage;
         }
       } // end of for loop
