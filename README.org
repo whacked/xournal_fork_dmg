@@ -6,8 +6,25 @@ dmgerman added egg_find_toolbar to the original xournal that allows search. it w
 
 ** USE AT YOUR OWN RISK!!!!!!!!!!!!!
 
-** this code currently compiles and "works for me" by running =make=. OSX 10.6.4, gcc i686-apple-darwin10-gcc-4.2.1 (GCC) 4.2.1
+** compiling ("works for me")
+with standard =./configure; make;=
+
+** OSX 10.6.4, gcc i686-apple-darwin10-gcc-4.2.1 (GCC) 4.2.1
   - i installed the deps with MacPorts ( =sudo port install xournal= ), and replace the MacPorts xournal
+
+** building on ubuntu:
+
+deps (lazy list, from what i'm missing after ubuntu install):
+    - libglib-2.0-dev
+    - automake
+      - needed this for depcomp. when it complained i made a symlink to the automake-1.11/depcomp file
+      - same for install-sh
+    - shtool
+    - libpoppler-dev
+    - libpoppler-glib-dev
+    - libgtk2.0-dev
+    - libgnomecanvas2-dev
+i have the default =apt-get install xournal= on my machine, then =sudo make install= puts the executable into /usr/local/bin by default; rm the /usr/bin/xournal one and symlink it over.
 
 ** current commit contains these modifications:
 
