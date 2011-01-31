@@ -2975,7 +2975,9 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
     //printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
   }
   else {
+#ifdef PRINTF_DEBUG
     printf("/====================\n| (%.1f, %.1f) (%.1f, %.1f) ui: (%.1f, %.1f)\n| %s\n\\====================\n", selectRect.x1, selectRect.y1, selectRect.x2, selectRect.y2, ui.cur_page->hoffset, ui.cur_page->voffset, selectedText);
+#endif
   }
 
   /*
