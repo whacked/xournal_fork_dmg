@@ -18,6 +18,8 @@
 #include <glib/gstdio.h>
 #include <poppler/glib/poppler.h>
 
+#include <unistd.h>
+
 #include "xournal.h"
 #include "xo-interface.h"
 #include "xo-support.h"
@@ -158,8 +160,28 @@ gboolean save_journal(const char *filename)
           g_free(tmpfn);
         }
         tmpstr = g_markup_escape_text(pg->bg->filename->s, -1);
+        // if same directory as pdf file, turn filename into relative path
+        // and not absolute path
+        char * cwd = getcwd(NULL, 0);
+        int i = 0, max = strlen(cwd);
+        if(max < strlen(tmpstr)) {
+            int allsame = 1;
+            for(; i < max; ++i) {
+                if(cwd[i] != tmpstr[i]) {
+                    allsame = 0;
+                    break;
+                }
+            }
+            if(allsame) {
+                max = strlen(tmpstr);
+                while(i < max) {
+                    if(tmpstr[i] != '/') { break; }
+                    ++i;
+                }
+            }
+        }
         gzprintf(f, "domain=\"%s\" filename=\"%s\" ", 
-          file_domain_names[pg->bg->file_domain], tmpstr);
+          file_domain_names[pg->bg->file_domain], tmpstr + i);
         g_free(tmpstr);
       }
       gzprintf(f, "pageno=\"%d\" ", pg->bg->file_page_seq);
