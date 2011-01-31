@@ -66,3 +66,5 @@ autocmd FileAppendPost      *.xoj  call gzip#write("gzip -S .xoj")
 
 last update <2011-01-31 Mon 01:06>
 
+** other update list
+- 2011-01-31 safe pdf backgrounds with relative filepath if same basepath found
