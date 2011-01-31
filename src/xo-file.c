@@ -33,7 +33,7 @@ const char *bgtype_names[3] = {"solid", "pixmap", "pdf"};
 const char *bgcolor_names[COLOR_MAX] = {"", "blue", "pink", "green",
    "", "", "", "", "orange", "yellow", "white"};
 const char *bgstyle_names[4] = {"plain", "lined", "ruled", "graph"};
-const char *file_domain_names[3] = {"absolute", "attach", "clone"};
+const char *file_domain_names[4] = {"absolute", "attach", "clone", "relative"};
 const char *unit_names[4] = {"cm", "in", "px", "pt"};
 int PDFTOPPM_PRINTING_DPI, GS_BITMAP_DPI;
 

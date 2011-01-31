@@ -94,13 +94,17 @@ void update_cursor(void)
   else if (ui.cur_item_type == ITEM_SELECTRECT) {
     ui.cursor = gdk_cursor_new(GDK_TCROSS);
   }
-  else if (ui.cur_item_type == ITEM_SELECTTEXT) {
-    ui.cursor = gdk_cursor_new(GDK_TCROSS);
-  }
   else if (ui.toolno[ui.cur_mapping] == TOOL_HAND) {
     ui.cursor = gdk_cursor_new(GDK_HAND1);
   }
   else if (ui.toolno[ui.cur_mapping] == TOOL_TEXT) {
+    ui.cursor = gdk_cursor_new(GDK_XTERM);
+  }
+  else if (ui.toolno[ui.cur_mapping] == TOOL_SELECTTEXT) {
+#ifdef PRINTF_DEBUG
+    printf("----------------- cursor for -------- selectText ----------------\n");
+#endif
+    //ui.cursor = gdk_cursor_new(GDK_TCROSS);
     ui.cursor = gdk_cursor_new(GDK_XTERM);
   }
   
@@ -499,9 +503,11 @@ void start_selectrect(GdkEvent *event)
 
 void start_selecttext(GdkEvent *event)
 {
+#ifdef PRINTF_DEBUG
     printf("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n");
     printf("I am in YOUR SELECT TEXT!!!!!!!!!!!\n");
     printf("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n");
+#endif
   double pt[2];
   reset_selection();
   
@@ -573,6 +579,9 @@ void finalize_selectrect(void)
   update_font_button();
 }
 
+
+
+
 void finalize_selecttext(void)
 {
   double x1, x2, y1, y2;
@@ -595,36 +604,93 @@ void finalize_selecttext(void)
     y1 = ui.selection->bbox.top;  y2 = ui.selection->bbox.bottom;
   }
 
+#ifdef PRINTF_DEBUG
   printf("i am getting the selection now . . . . . i am getting the selection now . . . . .i am getting the selection now . . . . .i am getting the selection now . . . . .\n\n");
+#endif
   PopplerPage *pdfPage;
   pdfPage = poppler_document_get_page(bgpdf.document, ui.pageno);
   double pg_wd, pg_ht;
   poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
   // y1 and y2 seem to be inverted coordinate system than GTK canvas bounding box
-  PopplerRectangle selectRect = { x1, pg_ht - y1, x2, pg_ht - y2 };
+  //PopplerRectangle selectRect = { x1, pg_ht - y1, x2, pg_ht - y2 };
+  PopplerRectangle selectRect = { x1, pg_ht - y2, x2, pg_ht - y1 };
   //PopplerRectangle selectRect = { 173.488434, 676.994867, 234.984334, 710.492634 };
 
-  // poppler_page_get_text has strange behavior:
-  // if nothing is in the selection box,
-  // if there is something in the same vertical line (same x value),
-  // it seems to pick up an entire block of text
-  
-  // in v0.16 use poppler_page_get_selected_text()
-  char * selectedText = poppler_page_get_text(pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+    char *selectedText;
+
+#ifdef HAVE_POPPLER_PAGE_GET_SELECTED_TEXT
+    selectedText = poppler_page_get_selected_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+#else
+    selectedText = poppler_page_get_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+#endif
 
   if (strlen(selectedText) == 0) {
+#ifdef PRINTF_DEBUG
       printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
+#endif
       reset_selection();
   }
   else {
+#ifdef PRINTF_DEBUG
       printf("got . . . . .   . . . . . . . . . . . . . . . . . . . . . .\n\n");
       printf("my string: %s\n", selectedText);
       printf("\ngot . . . . .   . . . . . . . . . . . . . . . . . . . . . .\n");
+#endif
       make_dashed(ui.selection->canvas_item);
+
+// <from GTK DEMO>
+  GtkWidget *dialog;
+  GtkWidget *hbox;
+  GtkWidget *textbox;
+  GtkTextBuffer *buffer;
+
+  GtkTextIter start;
+  GtkTextIter end;
+
+static GtkWidget *entry1 = NULL;
+  gint response;
+
+  dialog = gtk_dialog_new_with_buttons ("Copy to clipboard?",
+                    GTK_WINDOW (winMain),
+                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                    GTK_STOCK_OK, GTK_RESPONSE_OK,
+                    NULL);
+
+  hbox = gtk_hbox_new (FALSE, 8);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox), 8);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, FALSE, FALSE, 0);
+
+  textbox = gtk_text_view_new ();
+  buffer = gtk_text_view_get_buffer (textbox);
+  gtk_text_buffer_get_end_iter (buffer, &end);
+  gtk_text_buffer_insert(buffer, &end, selectedText, -1);
+    //gtk_entry_set_text (GTK_ENTRY (textbox), selectedText);
+  gtk_box_pack_start (GTK_BOX (hbox), textbox, TRUE, TRUE, 0);
+  
+  gtk_widget_show_all (hbox);
+  response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (response == GTK_RESPONSE_OK)
+    {
+#ifdef PRINTF_DEBUG
+      printf("copy to clipboard\n");
+#endif
       // copy to clipboard
       // ref: http://www.deskchecked.com/2007/06/27/passing-data-between-gtk-applications-with-gtkclipboard/
       /* set the clipboard text */
-      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), selectedText, strlen(selectedText));
+
+      //gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), selectedText, strlen(selectedText));
+      buffer = gtk_text_view_get_buffer (textbox);
+      gtk_text_buffer_get_start_iter (buffer, &start);
+      gtk_text_buffer_get_end_iter (buffer, &end);
+      gchar * editedText = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+      gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), editedText, strlen(selectedText));
+      g_free (editedText);
+    }
+
+  gtk_widget_destroy (dialog);
+// </from GTK DEMO>
 
       /* store the clipboard text */
       // seems to store to clipboard without this function. leaving here just in case
@@ -659,9 +725,11 @@ gboolean start_movesel(GdkEvent *event)
     return TRUE;
   }
   else if (ui.selection->type == ITEM_SELECTTEXT) {
+#ifdef PRINTF_DEBUG
       printf(" - - - - - \n");
       printf("   user is attempting to move the box\n");
       printf(" - - - - - \n");
+#endif
     //if (pt[0]<ui.selection->bbox.left || pt[0]>ui.selection->bbox.right ||
     //    pt[1]<ui.selection->bbox.top  || pt[1]>ui.selection->bbox.bottom)
     //  return FALSE;

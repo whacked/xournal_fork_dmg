@@ -22,6 +22,8 @@
 #include "xo-shapes.h"
 #include "eggfindbar.h"
 
+#include "ax-helper.h"
+
 void
 on_fileNew_activate                    (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
@@ -1997,6 +1999,10 @@ void
 on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
+#ifdef PRINTF_DEBUG
+  printf("----------------- activated selectText ----------------\n");
+#endif
+
   if (GTK_OBJECT_TYPE(menuitem) == GTK_TYPE_RADIO_MENU_ITEM) {
     if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM (menuitem)))
       return;
@@ -2009,7 +2015,7 @@ on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
   if (ui.toolno[ui.cur_mapping] == TOOL_SELECTTEXT) return;
   
   ui.cur_mapping = 0; // don't use switch_mapping() (refreshes buttons too soon)
-  end_text();
+  end_text(); // this is from copypasta of toolsSelectRectangle_activate, don't know how important, but it sets cur_item_type to TYPE_NONE
   ui.toolno[ui.cur_mapping] = TOOL_SELECTTEXT;
   update_mapping_linkings(-1);
   update_tool_buttons();
@@ -2719,7 +2725,18 @@ on_canvas_button_press_event           (GtkWidget       *widget,
     start_selectrect((GdkEvent *)event);
   }
   else if (ui.toolno[mapping] == TOOL_SELECTTEXT) {
+#ifdef PRINTF_DEBUG
+    printf(">>> start SELECTTEXT\n");
+#endif
+    
     start_selecttext((GdkEvent *)event);
+    
+    /*
+    // changed to below:
+    create_new_stroke((GdkEvent *)event);
+    ui.cur_item_type = ITEM_SELECTTEXT;
+    ui.cur_brush = &(ui.brushes[ui.cur_mapping][TOOL_HIGHLIGHTER]);
+    */
   }
   else if (ui.toolno[mapping] == TOOL_VERTSPACE) {
     start_vertspace((GdkEvent *)event);
@@ -2766,7 +2783,12 @@ on_canvas_button_release_event         (GtkWidget       *widget,
     finalize_selectrect();
   }
   else if (ui.cur_item_type == ITEM_SELECTTEXT) {
+#ifdef PRINTF_DEBUG
+    printf(">>> finish SELECTTEXT");
+#endif
+    
     finalize_selecttext();
+    //finalize_stroke();
   }
   else if (ui.cur_item_type == ITEM_MOVESEL || ui.cur_item_type == ITEM_MOVESEL_VERT) {
     finalize_movesel();
@@ -2928,8 +2950,59 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
   if (!is_core) ui.is_corestroke = FALSE;
 
 #ifdef INPUT_DEBUG
-  printf("DEBUG: MotionNotify (%s) (x,y)=(%.2f,%.2f), modifier %x\n", 
-    is_core?"core":"xinput", event->x, event->y, event->state);
+  //// printf("DEBUG: MotionNotify (%s) (x,y)=(%.2f,%.2f), modifier %x\n", 
+  ////   is_core?"core":"xinput", event->x, event->y, event->state);
+  double nowpt[2];
+  get_pointer_coords((GdkEvent *)event, nowpt);
+  //printf("moue: (x,y)=(%.2f,%.2f), coords=(%.2f, %.2f) ", 
+  //       event->x, event->y, nowpt[0], nowpt[1]);
+  double mouse_x, mouse_y;
+  mouse_x = nowpt[0];
+  mouse_y = nowpt[1];
+
+
+  PopplerPage *pdfPage;
+  pdfPage = poppler_document_get_page(bgpdf.document, ui.pageno);
+  
+  double pg_wd, pg_ht;
+  poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
+  //  ax_display_coord_to_pdf(1,1);
+  
+  PopplerRectangle selectRect = { mouse_x, pg_ht - mouse_y, mouse_x + 10, pg_ht - mouse_y + 10 };
+  char * selectedText = poppler_page_get_text(pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+  
+  if (strlen(selectedText) == 0) {
+    //printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
+  }
+  else {
+    printf("/====================\n| (%.1f, %.1f) (%.1f, %.1f) ui: (%.1f, %.1f)\n| %s\n\\====================\n", selectRect.x1, selectRect.y1, selectRect.x2, selectRect.y2, ui.cur_page->hoffset, ui.cur_page->voffset, selectedText);
+  }
+
+  /*
+
+    poppler_page_get_size (pdfPage, &width, &height);
+    matches = g_list_length (list);
+
+    printf("Page %d has %d matches\n", searchedPage+1, matches);
+
+    // Free list
+    for (l = list; l && l->data; l = g_list_next (l)) {
+      PopplerRectangle *rect = (PopplerRectangle *)l->data;
+      gdouble           tmp;
+      
+      // PDF coordinates are bottom up, so swap.
+      tmp = rect->y1;
+      rect->y1 = height - rect->y2;
+      rect->y2 = height - tmp;
+      /* display_rectangle * /
+      printf("Rectangle location (%8.2f%%,%8.2f%%)(%8.2f%%,%8.2f%%)\n",  
+             rect->x1/width,
+             rect->y1/height,
+             rect->x2/width,
+             rect->y2/height);
+
+*/
+
 #endif
   
   looks_wrong = !(event->state & (1<<(7+ui.which_mouse_button)));
@@ -2977,11 +3050,18 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
                                "x2", pt[0], "y2", pt[1], NULL);
   }
   else if (ui.cur_item_type == ITEM_SELECTTEXT) {
+#ifdef PRINTF_DEBUG
+    printf(">>> continue SELECTTEXT");
+#endif
+
     get_pointer_coords((GdkEvent *)event, pt);
     ui.selection->bbox.right = pt[0];
     ui.selection->bbox.bottom = pt[1];
     gnome_canvas_item_set(ui.selection->canvas_item,
                                "x2", pt[0], "y2", pt[1], NULL);
+    /*
+    continue_stroke((GdkEvent *)event);
+    */
   }
   else if (ui.cur_item_type == ITEM_MOVESEL || ui.cur_item_type == ITEM_MOVESEL_VERT) {
     continue_movesel((GdkEvent *)event);
@@ -3863,6 +3943,34 @@ egg_find_bar_new1 (gchar *widget_name, gchar *string1, gchar *string2,
 }
 
 
+
+
+
+
+
+/*
+
+  - temp rect draw
+  - draw arbitrarily many and clear screen
+  - make sure can draw on anypage anywhere
+  
+
+  - implement i-beam cursor mode
+    - start with printf(has text) wehnever mouse is over a text region
+    - spit out the character under the cursor
+    - then implement temp rect draw that follows cursor over text
+    - then restrict to adjacent
+
+
+ */
+
+
+
+
+
+
+
+
 // FIXME !
 // FIXME !
 // FIXME !
@@ -3896,7 +4004,9 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
 
   if(dodraw) {
 
+#ifdef PRINTF_DEBUG
     printf("hello there - ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ \n");
+#endif
     end_text();
     reset_selection();
 
@@ -3913,7 +4023,9 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
   }
   else {
     // free searchLayer
+#ifdef PRINTF_DEBUG
     printf(" testing searchLayer! -------------------> > > > > \n");
+#endif
     if(searchLayer != NULL) {
       // not sure if it's exactly the same to call:
       // delete_layer(searchLayer);
@@ -3927,7 +4039,9 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
         g_free(item);
         searchLayer->items = g_list_delete_link(searchLayer->items, searchLayer->items);
         searchLayer->nitems--;
+#ifdef PRINTF_DEBUG
         printf(" num in searchLayer: %d > > > > \n", searchLayer->nitems);
+#endif
       }
       if (searchLayer->group!= NULL) gtk_object_destroy(GTK_OBJECT(searchLayer->group));
       g_list_free(searchLayer->items);
@@ -3959,15 +4073,19 @@ gboolean find_pdf_matches(const char *st, int searchedPage, int dodraw)
       rect->y1 = height - rect->y2;
       rect->y2 = height - tmp;
       /* display_rectangle */
+#ifdef PRINTF_DEBUG
       printf("Rectangle location (%8.2f%%,%8.2f%%)(%8.2f%%,%8.2f%%)\n",  
              rect->x1/width,
              rect->y1/height,
              rect->x2/width,
              rect->y2/height);
+#endif
       
       if(dodraw) {
+#ifdef PRINTF_DEBUG
 printf(" ----------------------------------------------------- draw text match\n");
 printf(" ----------------------------------------------------- draw text match\n");
+#endif
         draw_text_match(rect);
       } // /if(dodraw)
     }
@@ -4007,7 +4125,9 @@ on_find_bar_next                       (GtkWidget       *widget,
 
       searchedPage = iCurrentPage;
       for (i=0; nextPage == -1 && i< nPages; i++) {
+#ifdef PRINTF_DEBUG
           printf(" >>>>>>>>>>>>>>> ui.searching_page is now: %d", ui.searching_page);
+#endif
           if(ui.searching_page == -1) {
           }
           else {

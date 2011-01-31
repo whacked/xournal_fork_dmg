@@ -2,6 +2,9 @@
 #include <libgnomecanvas/libgnomecanvas.h>
 #include <poppler/glib/poppler.h>
 
+// #define PRINTF_DEBUG
+/* uncomment to activate printf everywhere because I'm n00b */
+
 #define INPUT_DEBUG
 /* uncomment this line if you experience event-processing problems
    and want to list the input events received by xournal. Caution, lots
@@ -79,6 +82,7 @@ typedef struct Background {
 #define DOMAIN_ABSOLUTE 0
 #define DOMAIN_ATTACH 1
 #define DOMAIN_CLONE 2  // only while loading file
+#define DOMAIN_RELATIVE 3
 
 typedef struct Brush {
   int tool_type;
