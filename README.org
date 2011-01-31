@@ -1,32 +1,17 @@
-useful risky enhancements to xournal based on dmgerman's fork (http://github.com/dmgerman/xournal)
+* xournal
 
-if you don't know what xournal is, it is currently the *only* open source note-taking software that has top-notch annotation facilities for pdfs (and images), that works on Windows, Mac, and Linux. It is the default pdf reader on all my machines. I have tried Skim (Mac), Okular (Lin/Win/Mac), and a few others. Nothing comes close in interop, customizability, and features. Plus, your notes are stored in xoj files that are simple to edit and save and sync.
+is currently the *only* open source note-taking software that has top-notch annotation facilities for pdfs (and images), that works on Windows, Mac, and Linux. It is the default pdf reader on all my machines. I have tried Skim (Mac), Okular (Lin/Win/Mac), and a few others. Nothing comes close in interop, customizability, and features. Plus, your notes are stored in xoj files that are simple to edit and save and sync.
 
-dmgerman added egg_find_toolbar to the original xournal that allows search. it would jump to the next page in the pdf that contains the word in the search field
+** USE AT YOUR OWN RISK.
 
-** USE AT YOUR OWN RISK!!!!!!!!!!!!!
+- compiles & works for me on ubuntu 10.10
+- OSX 10.6.4, 10.5.8: install deps with MacPorts ( =sudo port install xournal= ), and replace the MacPorts xournal
 
-** compiling ("works for me")
-with standard =./configure; make;=
+** contains these modifications:
 
-** OSX 10.6.4, gcc i686-apple-darwin10-gcc-4.2.1 (GCC) 4.2.1
-  - i installed the deps with MacPorts ( =sudo port install xournal= ), and replace the MacPorts xournal
+*** from dmgerman (http://github.com/dmgerman/xournal)
 
-** building on ubuntu:
-
-deps (lazy list, from what i'm missing after ubuntu install):
-    - libglib-2.0-dev
-    - automake
-      - needed this for depcomp. when it complained i made a symlink to the automake-1.11/depcomp file
-      - same for install-sh
-    - shtool
-    - libpoppler-dev
-    - libpoppler-glib-dev
-    - libgtk2.0-dev
-    - libgnomecanvas2-dev
-i have the default =apt-get install xournal= on my machine, then =sudo make install= puts the executable into /usr/local/bin by default; rm the /usr/bin/xournal one and symlink it over.
-
-** current commit contains these modifications:
+contains egg_find_toolbar, allows search. jumps to the next page in the pdf that contains the word in the search field
 
 *** highlight search results
   - clicking "Find next" in the search bar will highlight matches. again, the search begins on the NEXT page.
@@ -38,11 +23,10 @@ i have the default =apt-get install xournal= on my machine, then =sudo make inst
   - search for =0xffff0080= in xo-callbacks.c to change the highlight color
 
 *** select text & copy to clipboard
-  - basically copy pasta of the SelectRectangle code, but in =finalize_selecttext=, call =poppler_page_get_text= on the rect region
-  - choose the "Select Text" tool (next to select tool), or press =Ctrl-/=
-  - draw a rectangle over the area you want to select+copy
-  - after you release, it will attempt to find the text inside and copy to clipboard *immediately*
-  - i tested this, it is not very reliable, but it does the job for me
+  - 2011-01-31 changed selectRect code (swap y1 & y2), somehow this makes selection more correct
+  - rectanglular select tool, using SelectRectangle code, but in =finalize_selecttext=, call =poppler_page_get_text= on the rect region
+  - popup dialog after select to confirm copy to clipboard
+  - rectangular selection is not actually rectangular. it wraps around
   - search for =0x40409040= in xo-paint.c (in =start_selecttext=) to change select box color
 
 ** current issues with the "search" and "copy text" function
@@ -66,13 +50,19 @@ autocmd FileAppendPost      *.xoj  call gzip#write("gzip -S .xoj")
 #+end_src
 
 
-** fork me! xournal is great.
+** wishlist/todo
 
-Version 0.4.5 (October 2, 2009)
+   - complex "set as default"
+     - always start highlighter with shape recognizer
+   - set shape recognizer sensitivity
+   - allow 3rd party paper options
+     - sheet music
+   - hold space to pan with mouse
+   - text-awareness
+     - text select
+     - text highlighter
+   - pretty pretty icon
+   - investigate multitouch support
 
-Installation:   see INSTALL
-Latest changes: see ChangeLog
-User's manual:  see html-doc/manual.html
-Updates:        see http://xournal.sourceforge.net/
+last update <2011-01-31 Mon 01:06>
 
-See also: http://sourceforge.net/projects/xournal
