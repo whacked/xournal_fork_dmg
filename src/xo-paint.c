@@ -6,6 +6,9 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <libgnomecanvas/libgnomecanvas.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <libart_lgpl/art_vpath_dash.h>
 
@@ -586,7 +589,6 @@ void finalize_selecttext(void)
 {
   double x1, x2, y1, y2;
   struct Item *item;
-
   
   ui.cur_item_type = ITEM_NONE;
 
@@ -624,11 +626,13 @@ void finalize_selecttext(void)
     selectedText = poppler_page_get_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
 #endif
 
+    int save_png_extraction = 0;
   if (strlen(selectedText) == 0) {
 #ifdef PRINTF_DEBUG
       printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
 #endif
       reset_selection();
+      save_png_extraction = 1;
   }
   else {
 #ifdef PRINTF_DEBUG
@@ -656,19 +660,25 @@ static GtkWidget *entry1 = NULL;
                     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                     GTK_STOCK_OK, GTK_RESPONSE_OK,
                     NULL);
+  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_OK);
 
   hbox = gtk_hbox_new (FALSE, 8);
   gtk_container_set_border_width (GTK_CONTAINER (hbox), 8);
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, FALSE, FALSE, 0);
 
   textbox = gtk_text_view_new ();
+  gtk_text_view_set_accepts_tab(textbox, FALSE);
   buffer = gtk_text_view_get_buffer (textbox);
   gtk_text_buffer_get_end_iter (buffer, &end);
   gtk_text_buffer_insert(buffer, &end, selectedText, -1);
-    //gtk_entry_set_text (GTK_ENTRY (textbox), selectedText);
+  //gtk_entry_set_text (GTK_ENTRY (textbox), selectedText);
   gtk_box_pack_start (GTK_BOX (hbox), textbox, TRUE, TRUE, 0);
   
   gtk_widget_show_all (hbox);
+  // just trying to make OK get focus by default
+  // OMFG for an hour i cannot find what function it is :-((((((
+  // instead i end up with this function which does nothing
+  gtk_entry_set_activates_default(GTK_ENTRY(textbox), TRUE);
   response = gtk_dialog_run (GTK_DIALOG (dialog));
 
   if (response == GTK_RESPONSE_OK)
@@ -687,14 +697,87 @@ static GtkWidget *entry1 = NULL;
       gchar * editedText = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
       gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), editedText, strlen(selectedText));
       g_free (editedText);
+
+      save_png_extraction = 1;
     }
 
+
+
   gtk_widget_destroy (dialog);
+      reset_selection();
 // </from GTK DEMO>
 
       /* store the clipboard text */
       // seems to store to clipboard without this function. leaving here just in case
       //gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+  if(save_png_extraction) {
+      // should go to separate function.
+      if(journal.pages != NULL) {
+          struct Page *getpg;
+          getpg = (struct Page *)journal.pages->data;
+          if (getpg->bg->type == BG_PDF) {
+              // make the directory to hold the extraction image
+              // no idea how cross platform this is
+              gchar * curFileName = g_markup_escape_text(getpg->bg->filename->s, -1);
+              gchar * outdir = g_strconcat(curFileName, ".img", NULL);
+              mkdir(outdir, S_IRWXU | S_IRWXO | S_IRGRP | S_IXGRP);
+
+              struct tm *ptr;
+              time_t lt;
+              lt = time(NULL);
+              ptr = localtime(&lt);
+              char str_tm[23];
+              strftime(str_tm, 23, "/%Y-%m-%d_%H%M%S.png", ptr);
+              
+              gchar * outfile = g_strconcat(outdir, str_tm, NULL);
+
+              // save selection rectangle to png file
+              int extract_w, extract_h;
+              extract_w = (int) (x2-x1)*ui.zoom;
+              extract_h = (int) (y2-y1)*ui.zoom;
+              GdkPixbuf *mypixbuf;
+              mypixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, extract_w, extract_h);
+              printf("%.3f\n", ui.zoom);
+              poppler_page_render_to_pixbuf(
+                          pdfPage, (int)x1*ui.zoom, (int)y1*ui.zoom, (int)x2*ui.zoom, (int)y2*ui.zoom,
+                          ui.zoom, 0, mypixbuf);
+              struct GError * error = NULL;
+              gdk_pixbuf_save (mypixbuf, outfile, "png", &error, NULL);
+              // this g_free causes segfault
+              // other people's codes don't seem to be freeing it either
+              // can't find it easily in the doc. why :-(((((
+              //g_free (mypixbuf);
+
+              // asdf zxcv
+              // cairo version. don't know how to scale it to the current zoom level
+              // don't feel like figuring it out now
+              //cairo_surface_t * cpgsurface, * cextsurface;
+              //cairo_t * crpg, * crext;
+              //cpgsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, pg_wd, pg_ht);
+              //crpg = cairo_create(cpgsurface);
+              //poppler_page_render_for_printing(pdfPage, crpg);
+
+              //cextsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, extract_w, extract_h);
+              //crext = cairo_create(cextsurface);
+              //cairo_set_source_surface(crext, cpgsurface, -x1, -y1);
+              //cairo_paint(crext);
+
+              //cairo_surface_write_to_png(cextsurface, outfile);
+              //cairo_destroy(crpg);
+              //cairo_destroy(crext);
+              //cairo_surface_destroy(cpgsurface);
+              //cairo_surface_destroy(cextsurface);
+              printf("saved file to: %s\n", outfile);
+              g_free(outfile);
+              g_free(curFileName);
+              g_free(outdir);
+          }
+      }
+
+
+  }
+
   }
   update_cursor();
   update_copy_paste_enabled();
