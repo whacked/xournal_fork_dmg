@@ -703,80 +703,106 @@ static GtkWidget *entry1 = NULL;
 
 
 
-  gtk_widget_destroy (dialog);
+      gtk_widget_destroy (dialog);
       reset_selection();
 // </from GTK DEMO>
 
-      /* store the clipboard text */
-      // seems to store to clipboard without this function. leaving here just in case
+      /* store the clipboard text */ // seems to store to clipboard without this function. leaving here just in case
       //gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
-  if(save_png_extraction) {
-      // should go to separate function.
-      if(journal.pages != NULL) {
-          struct Page *getpg;
-          getpg = (struct Page *)journal.pages->data;
-          if (getpg->bg->type == BG_PDF) {
-              // make the directory to hold the extraction image
-              // no idea how cross platform this is
-              gchar * curFileName = g_markup_escape_text(getpg->bg->filename->s, -1);
-              gchar * outdir = g_strconcat(curFileName, ".img", NULL);
-              mkdir(outdir, S_IRWXU | S_IRWXO | S_IRGRP | S_IXGRP);
+      if(save_png_extraction) {
+          // should go to separate function.
+          if(journal.pages != NULL) {
+              struct Page *getpg;
+              getpg = (struct Page *)journal.pages->data;
+              if (getpg->bg->type == BG_PDF) {
+                  // make the directory to hold the extraction image
+                  // no idea how cross platform this is
+                  gchar * curFileName = g_markup_escape_text(getpg->bg->filename->s, -1);
+                  gchar * outdir = g_strconcat(curFileName, ".img", NULL);
+                  mkdir(outdir, S_IRWXU | S_IRWXO | S_IRGRP | S_IXGRP);
 
-              struct tm *ptr;
-              time_t lt;
-              lt = time(NULL);
-              ptr = localtime(&lt);
-              char str_tm[23];
-              strftime(str_tm, 23, "/%Y-%m-%d_%H%M%S.png", ptr);
-              
-              gchar * outfile = g_strconcat(outdir, str_tm, NULL);
+                  struct tm *ptr;
+                  time_t lt;
+                  lt = time(NULL);
+                  ptr = localtime(&lt);
+                  char str_tm[23];
+                  strftime(str_tm, 23, "/%Y-%m-%d_%H%M%S.png", ptr);
+                  
+                  gchar * outfile = g_strconcat(outdir, str_tm, NULL);
 
-              // save selection rectangle to png file
-              int extract_w, extract_h;
-              extract_w = (int) (x2-x1)*ui.zoom;
-              extract_h = (int) (y2-y1)*ui.zoom;
-              GdkPixbuf *mypixbuf;
-              mypixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, extract_w, extract_h);
-              printf("%.3f\n", ui.zoom);
-              poppler_page_render_to_pixbuf(
-                          pdfPage, (int)x1*ui.zoom, (int)y1*ui.zoom, (int)x2*ui.zoom, (int)y2*ui.zoom,
-                          ui.zoom, 0, mypixbuf);
-              struct GError * error = NULL;
-              gdk_pixbuf_save (mypixbuf, outfile, "png", &error, NULL);
-              // this g_free causes segfault
-              // other people's codes don't seem to be freeing it either
-              // can't find it easily in the doc. why :-(((((
-              //g_free (mypixbuf);
+                  // save selection rectangle to png file
+                  int extract_w, extract_h;
+                  extract_w = (int) (x2-x1)*ui.zoom;
+                  extract_h = (int) (y2-y1)*ui.zoom;
+                  GdkPixbuf *mypixbuf;
+                  mypixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, extract_w, extract_h);
+                  printf("%.3f\n", ui.zoom);
+                  poppler_page_render_to_pixbuf(
+                              pdfPage, (int)x1*ui.zoom, (int)y1*ui.zoom, (int)x2*ui.zoom, (int)y2*ui.zoom,
+                              ui.zoom, 0, mypixbuf);
+                  struct GError * error = NULL;
+                  gdk_pixbuf_save (mypixbuf, outfile, "png", &error, NULL);
+                  // this g_free causes segfault
+                  // other people's codes don't seem to be freeing it either
+                  // can't find it easily in the doc. why :-(((((
+                  //g_free (mypixbuf);
 
-              // asdf zxcv
-              // cairo version. don't know how to scale it to the current zoom level
-              // don't feel like figuring it out now
-              //cairo_surface_t * cpgsurface, * cextsurface;
-              //cairo_t * crpg, * crext;
-              //cpgsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, pg_wd, pg_ht);
-              //crpg = cairo_create(cpgsurface);
-              //poppler_page_render_for_printing(pdfPage, crpg);
+                  // asdf zxcv
+                  // cairo version. don't know how to scale it to the current zoom level
+                  // don't feel like figuring it out now
+                  //cairo_surface_t * cpgsurface, * cextsurface;
+                  //cairo_t * crpg, * crext;
+                  //cpgsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, pg_wd, pg_ht);
+                  //crpg = cairo_create(cpgsurface);
+                  //poppler_page_render_for_printing(pdfPage, crpg);
 
-              //cextsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, extract_w, extract_h);
-              //crext = cairo_create(cextsurface);
-              //cairo_set_source_surface(crext, cpgsurface, -x1, -y1);
-              //cairo_paint(crext);
+                  //cextsurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, extract_w, extract_h);
+                  //crext = cairo_create(cextsurface);
+                  //cairo_set_source_surface(crext, cpgsurface, -x1, -y1);
+                  //cairo_paint(crext);
 
-              //cairo_surface_write_to_png(cextsurface, outfile);
-              //cairo_destroy(crpg);
-              //cairo_destroy(crext);
-              //cairo_surface_destroy(cpgsurface);
-              //cairo_surface_destroy(cextsurface);
-              printf("saved file to: %s\n", outfile);
-              g_free(outfile);
-              g_free(curFileName);
-              g_free(outdir);
+                  //cairo_surface_write_to_png(cextsurface, outfile);
+                  //cairo_destroy(crpg);
+                  //cairo_destroy(crext);
+                  //cairo_surface_destroy(cpgsurface);
+                  //cairo_surface_destroy(cextsurface);
+#ifdef PRINTF_DEBUG
+                  printf("saved file to: %s\n", outfile);
+#endif
+
+                  // output to extract log
+                  // execute hook file if exists
+                  gchar *outlogpath;
+                  gboolean warn;
+                  outlogpath = g_build_filename(g_get_home_dir(), CONFIG_DIR, "extract.log", NULL);
+                  FILE * fp = fopen(outlogpath, "w");
+                  fwrite(outfile, strlen(outfile), 1, fp);
+                  fclose(fp);
+
+                  gchar * argv[2];
+                  argv[0] = g_build_filename(g_get_home_dir(), CONFIG_DIR, "hook-post-extract", NULL);
+                  argv[1] = NULL;
+                  if(g_file_test(argv[0], G_FILE_TEST_IS_EXECUTABLE)) {
+                      g_spawn_async(NULL, argv, NULL,
+                              G_SPAWN_SEARCH_PATH, NULL,
+                              NULL, NULL, NULL);
+                  } else {
+#ifdef PRINTF_DEBUG
+                      printf("no hook found\n");
+#endif
+
+                  }
+                  g_free(argv[0]);
+
+                  g_free(curFileName);
+                  g_free(outlogpath);
+                  g_free(outfile);
+                  g_free(outdir);
+
+              }
           }
       }
-
-
-  }
 
   }
   update_cursor();

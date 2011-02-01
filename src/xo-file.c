@@ -160,6 +160,7 @@ gboolean save_journal(const char *filename)
           g_free(tmpfn);
         }
         tmpstr = g_markup_escape_text(pg->bg->filename->s, -1);
+        // qwer
         // if same directory as pdf file, turn filename into relative path
         // and not absolute path
         char * cwd = getcwd(NULL, 0);
@@ -180,6 +181,7 @@ gboolean save_journal(const char *filename)
                 }
             }
         }
+        g_free(cwd);
         gzprintf(f, "domain=\"%s\" filename=\"%s\" ", 
           file_domain_names[pg->bg->file_domain], tmpstr + i);
         g_free(tmpstr);
