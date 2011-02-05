@@ -587,8 +587,12 @@ void finalize_selectrect(void)
 
 void finalize_selecttext(void)
 {
+
+
+    // selecttext begins here
   double x1, x2, y1, y2;
   struct Item *item;
+  
   
   ui.cur_item_type = ITEM_NONE;
 
@@ -605,6 +609,68 @@ void finalize_selecttext(void)
   } else {
     y1 = ui.selection->bbox.top;  y2 = ui.selection->bbox.bottom;
   }
+
+      // <rectangle>
+      ui.searching_page = -1;
+        
+      ui.cur_item_type = ITEM_STROKE;
+      ui.cur_item = g_new(struct Item, 1);
+      ui.cur_item->type = ITEM_STROKE;
+      ui.cur_brush = &(ui.brushes[ui.cur_mapping][TOOL_HIGHLIGHTER]);
+      g_memmove(&(ui.cur_item->brush), ui.cur_brush, sizeof(struct Brush));
+      ui.cur_item->path = &ui.cur_path;
+      realloc_cur_path(10);
+      ui.cur_path.num_points = 5;
+      ui.cur_path.coords[0] = x1;
+      ui.cur_path.coords[1] = y1;
+      ui.cur_path.coords[2] = x1;
+      ui.cur_path.coords[3] = y2;
+      ui.cur_path.coords[4] = x2;
+      ui.cur_path.coords[5] = y2;
+      ui.cur_path.coords[6] = x2;
+      ui.cur_path.coords[7] = y1;
+      ui.cur_path.coords[8] = x1;
+      ui.cur_path.coords[9] = y1;
+      
+      ui.cur_item->canvas_item = gnome_canvas_item_new(ui.cur_layer->group,
+        gnome_canvas_line_get_type(),
+        "cap-style", GDK_CAP_ROUND, "join-style", GDK_JOIN_ROUND,
+        "fill-color-rgba", ui.cur_item->brush.color_rgba,
+        "width-units", ui.cur_item->brush.thickness, NULL);
+
+      GnomeCanvasPoints seg;
+      seg.coords = ui.cur_path.coords; 
+      seg.num_points = 5;
+      seg.ref_count = 1;
+      
+      /* note: we're using a piece of the cur_path array. This is ok because
+         upon creation the line just copies the contents of the GnomeCanvasPoints
+         into an internal structure */
+      gnome_canvas_item_set(ui.cur_item->canvas_item, "points", &seg, "dash", NULL, NULL);
+      // finalize rectangle
+      ui.cur_item->path = gnome_canvas_points_new(ui.cur_path.num_points);
+      g_memmove(ui.cur_item->path->coords, ui.cur_path.coords, 
+          2*ui.cur_path.num_points*sizeof(double));
+      ui.cur_item->widths = NULL;
+      update_item_bbox(ui.cur_item);
+      ui.cur_path.num_points = 0;
+
+      gtk_object_destroy(GTK_OBJECT(ui.cur_item->canvas_item));
+      make_canvas_item_one(ui.cur_layer->group, ui.cur_item);
+
+      // add undo information
+      prepare_new_undo();
+      undo->type = ITEM_STROKE;
+      undo->item = ui.cur_item;
+      undo->layer = ui.cur_layer;
+
+      // store the item on top of the layer stack
+      ui.cur_layer->items = g_list_append(ui.cur_layer->items, ui.cur_item);
+      ui.cur_layer->nitems++;
+      ui.cur_item = NULL;
+      ui.cur_item_type = ITEM_NONE;
+      // </rectangle>
+
 
 #ifdef PRINTF_DEBUG
   printf("i am getting the selection now . . . . . i am getting the selection now . . . . .i am getting the selection now . . . . .i am getting the selection now . . . . .\n\n");

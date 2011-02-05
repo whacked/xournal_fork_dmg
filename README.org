@@ -28,6 +28,7 @@ contains egg_find_toolbar, allows search. jumps to the next page in the pdf that
   - popup dialog after select to confirm copy to clipboard
   - rectangular selection is not actually rectangular. it wraps around
   - search for =0x40409040= in xo-paint.c (in =start_selecttext=) to change select box color
+  - 2011-02-05 looks like it segfaults if there isn't a background pdf?
 
 ** current issues with the "search" and "copy text" function
   - I'm not confident about the freeing memory part in the highlighting matches functions ( =find_pdf_matches= )
@@ -70,3 +71,4 @@ last update <2011-01-31 Mon 01:06>
 - 2011-01-31 safe pdf backgrounds with relative filepath if same basepath found
 - 2011-02-01 added image extraction. copy to clipboard after text selection will now automatically save a png of the selected region; the png filename is written to ~/.xournal/extract.log for hook use
 - 2011-02-01 executes the file found at =~/.xournal/hook-post-extract= if it exists
+- 2011-02-05 actually create an undoable rectangle item where text-selection was used; mostly copy pasta from the stroke
