@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# a sample hook for post-extraction.
+# put this in ~/.xournal/ and chmod +x
+# 
+# append copied text into png capture dir's
+# text-select.log, using org-mode format
+
+
+PNGPATH=`cat ~/.xournal/extract.log`
+PNGNAME=`basename "$PNGPATH"`
+LOGPATH=`dirname "$PNGPATH"`/text-select.log
+DATESTR=`date +"%Y-%m-%d %H:%M:%S"`
+TEXTOUT=`xsel --clipboard --output`
+cat >> "$LOGPATH"<<OUTPUT
+  - $DATESTR
+    $PNGNAME
+
+  $TEXTOUT
+
+-----
+
+OUTPUT
