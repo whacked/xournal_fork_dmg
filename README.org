@@ -53,6 +53,7 @@ autocmd FileAppendPost      *.xoj  call gzip#write("gzip -S .xoj")
 
 ** wishlist/todo
 
+   - *problem*: the select text's popup box will only remember text that is <= current length of text initially in it. make this dynamic!
    - complex "set as default"
      - always start highlighter with shape recognizer
    - set shape recognizer sensitivity
