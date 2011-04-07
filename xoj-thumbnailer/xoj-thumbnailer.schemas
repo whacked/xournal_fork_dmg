@@ -1,0 +1,636 @@
+<gconfschemafile>
+    <schemalist>
+
+        <schema>
+            <key>/schemas/desktop/gnome/thumbnailers/application@x-xoj/enable</key>
+            <applyto>/desktop/gnome/thumbnailers/application@x-xoj/enable</applyto>
+            <owner>xournal</owner>
+            <type>bool</type>
+            <default>true</default>
+            <locale name="C">
+                <short>Enable thumbnailing of XOJ Documents</short>
+                <long>Boolean options available, true enables thumbnailing and false disables the creation of new thumbnails</long>
+            </locale>
+
+            <locale name="ar">
+                <short>مكّن إنشاء مُسْتعْرضات من مستندات XOJ</short>
+                <long>الخيارات المنطقية متوفرة، true تمكن المُسْتعْرضات و false تعطل إنشاء مُسْتعْرضات جديدة</long>
+            </locale>
+
+            <locale name="be">
+                <short>Ствараць мініятуры для XOJ дакумэнтаў</short>
+                <long>Дазволеныя лягічныя значэньні, true: ствараць мініятуры,false: не ствараць.</long>
+            </locale>
+
+            <locale name="be@latin">
+                <short>Uklučy minijatury dla dakumentaŭ XOJ</short>
+                <long>Dastupnyja lohikavyja opcyi: true ŭklučaje stvareńnie minijaturaŭ, false adklučaje</long>
+            </locale>
+
+            <locale name="bg">
+                <short>Мини изображения за документите от вид XOJ</short>
+                <long>Налични булеви опции - „true“ включва създаването на мини изображения, а „false“ го изключва</long>
+            </locale>
+
+            <locale name="bn">
+                <short>পি.ডি.এফ. ডকুমেন্টের থাম্বনেইল তৈরির প্রক্রিয়া সক্রিয় করো</short>
+                <long>বুলিয়ান অপশন প্রযোগ্য; সত্য (true) হলে থাম্বলেইল দেখা যাবে এবং মিথ্যা (false) হলে নতুন থাম্বনেইল তৈরি হবে না</long>
+            </locale>
+
+            <locale name="bn_IN">
+                <short>XOJ ডকুমেন্টের থাম্ব-নেইল নির্মাণ সক্রিয় করা হবে</short>
+                <long>বুলিয়াল মান প্রযোজ্য, true (সত্য) হলে থাম্ব-নেইল সক্রিয় করা হবে ও মান false (সত্য নয়) হলে নতুন থাম্ব-নেইল নির্মাণ বন্ধ করা হবে</long>
+            </locale>
+
+            <locale name="ca">
+                <short>Habilita les miniatures per als documents XOJ</short>
+                <long>Opcions booleanes disponibles, cert habilita les miniatures i fals inhabilita la creació de noves miniatures</long>
+            </locale>
+
+            <locale name="cs">
+                <short>Povolit tvorbu miniatur dokumentů XOJ</short>
+                <long>Dostupné booleovské možnosti, true povoluje tvorbu miniatur a falze zakazuje vytváření nových miniatur</long>
+            </locale>
+
+            <locale name="cy">
+                <short>Galluogi lluniau cryno o ddogfennau XOJ</short>
+                <long>Opsiynau Boole ar gael, gwir yn galluogi creu lluniau cryno a ffug yn analluogi creu lluniau cryno</long>
+            </locale>
+
+            <locale name="da">
+                <short>Aktivér miniaturer for XOJ-dokumenter</short>
+                <long>Hvis sand aktiveres generering af miniaturer.</long>
+            </locale>
+
+            <locale name="de">
+                <short>Vorschaubilder von XOJ-Dokumenten aktivieren</short>
+                <long>Wahr (true) aktiviert die Erstellung von Vorschaubildern, während unwahr (false) das Erzeugen neuer Vorschaubilder deaktiviert.</long>
+            </locale>
+
+            <locale name="dz">
+                <short>པི་ཌི་ཨེཕ་ཡིག་ཆ་ཚུ་ལུ་ མཐེ་གཟེར་བརྡབ་ནི་ལྕོགས་ཅན་བཟོ།</short>
+                <long>འཐོབ་ཚུགས་པའི་བུ་ལིན་གྱི་གདམ་ཁ། བདེན་པ་གིས་མཐེ་གཟེར་བརྡབ་ཚུགསཔ་བཟོ་ནི་དང་ རྫུན་པ་གིས་མཐེ་གཟེར་གསར་བསྐྲུན་འབད་མ་ཚུགསཔ་བཟོཝ་ཨིན།</long>
+            </locale>
+
+            <locale name="el">
+                <short>Ενεργοποίηση μικρογραφιών για έγγραφα τύπου XOJ</short>
+                <long>Διαθέσιμη επιλογή boolean: true ενεργοποιεί τη δημιουργία μικρογραφιών ενώ false απενεργοποιεί τη δημιουργία νέων μικρογραφιών</long>
+            </locale>
+
+            <locale name="en_CA">
+                
+                <long>Boolean options available: true enables thumbnailing and false disables the creation of new thumbnails</long>
+            </locale>
+
+            <locale name="es">
+                <short>Activar miniaturas de documentos XOJ</short>
+                <long>Opciones booleanas disponibles, &quot;true&quot; activa las miniaturas y &quot;false&quot; desactiva la creación de miniaturas nuevas</long>
+            </locale>
+
+            <locale name="et">
+                <short>Luba XOJ-dokumentidest pisipiltide tegemine</short>
+                <long>Tõeväärtusvalikud olemas, tõene lubab pisipiltide tegemise ja väär keelab selle</long>
+            </locale>
+
+            <locale name="eu">
+                <short>Gaitu XOJ dokumentuen koadro txikiak</short>
+                <long>Eskuragarri dauden aukera boolearrak, egiak koadro txikiak gaitzen ditu eta faltsuakkoadro txiki berriak sortzea desgaitzen du.</long>
+            </locale>
+
+            <locale name="fa">
+                <short>به کار انداختن مسطوره‌سازی برای نوشتارهای XOJ</short>
+                <long>دو گزینهٔ بولی ممکن است، درست مسطوره‌سازی را به کار می‌اندازد و نادرست ایجاد مسطوره‌های جدید را قطع می‌کند</long>
+            </locale>
+
+            <locale name="fi">
+                <short>Ota XOJ-asiakirjojen pienoiskuvat käyttöön</short>
+                <long>Mahdolliset vaihtoehdot: &quot;true&quot; ottaa pienoiskuvat käyttöön, &quot;false&quot; poistaa pienoiskuvien luomisen käytöstä</long>
+            </locale>
+
+            <locale name="fr">
+                <short>Active la création de vignettes pour les documents XOJ</short>
+                <long>Valeurs booléennes disponibles, VRAI active la création de vignettes et FAUX désactive la création de nouvelles vignettes</long>
+            </locale>
+
+            <locale name="gl">
+                <short>Activar as miniaturas dos documentos XOJ</short>
+                <long>Opcións booleanas dispoñibles, &quot;true&quot; activa as miniaturas e &quot;false&quot; desactiva a creación de novas miniaturas</long>
+            </locale>
+
+            <locale name="gu">
+                <short>XOJ દસ્તાવેજોનું થમ્બનેઈલ કરવાનું સક્રિય કરો</short>
+                <long>બુલિયન વિકલ્પો ઉપલબ્ધ છે, સાચું થમ્બનેઈલીંગને સક્રિય કરે છે અને ખોટું નવા થમ્બનેઈલની બનાવટને નિષ્ક્રિય કરે છે</long>
+            </locale>
+
+            <locale name="hi">
+                <short>XOJ का थंबनेल सक्षम करें</short>
+                <long>बूलियन विकल्प उपलब्ध, सही थंबनेल को सक्रिय करता है औऱ गलत नये थंबनेल के निर्माण को निष्क्रिय</long>
+            </locale>
+
+            <locale name="hu">
+                <short>XOJ dokumentumokról bélyegképek készítésének engedélyezése</short>
+                <long>Igaz hatására a bélyegképek készítése engedélyezve lesz, hamis hatására pedig nem.</long>
+            </locale>
+
+            <locale name="id">
+                <short>Aktifkan cuplikan kecil dari dokumen XOJ</short>
+                <long>Pilihan boolean tersedia, benar akan membolehkan cuplikan kecil dan salah akan mematikan pembuatan cuplikan kecil</long>
+            </locale>
+
+            <locale name="it">
+                <short>Abilita la miniatura dei documenti XOJ</short>
+                <long>Opzioni booleane disponibili, true abilita la creazione delle miniature e false disabilita la creazione di nuove miniaure</long>
+            </locale>
+
+            <locale name="ja">
+                <short>XOJ ドキュメントのサムネイル表示</short>
+                <long>論理型のオプションが利用可能で、TRUE にするとサムネイル表示になります。</long>
+            </locale>
+
+            <locale name="ka">
+                <short>XOJ დოკუმენტების დაესკიზების ჩართვა</short>
+                <long>ჩართულია ლოგიკური ოპერატორი, true გააქტიურებს ესკიზურ რეჟიმს, ხოლო false ამორთავს ამ ფუნქციას.</long>
+            </locale>
+
+            <locale name="ko">
+                <short>XOJ 문서의 미리보기 만들기 가능</short>
+                <long>참/거짓으로 설정 가능, 참이면 미리보기 만들기, 거짓이면 미리보기 만들기를 하지 않음</long>
+            </locale>
+
+            <locale name="ku">
+                <short>Çalakiya wêneyên biçûk yên Pelên XOJ</short>
+                
+            </locale>
+
+            <locale name="lt">
+                <short>Įjungti XOJ dokumentų miniatiūras</short>
+                <long>Prieinamos loginės parinktys: teigiama - įjungia miniatiūras, neigiama - išjungia</long>
+            </locale>
+
+            <locale name="lv">
+                <short>Aktivizēt XOJ dokumentu sīktēlu veidošanu</short>
+                <long>Pieejama loģikā opcija, patiess aktivizē sīktēlošanu, bet nepatiess atslēdz sīktēlu veidošanu</long>
+            </locale>
+
+            <locale name="mg">
+                <short>Mandefa ny fanaovan-tsary madinika ho an&apos;ny tahirin-kevitra XOJ</short>
+                <long>Misy safidy bolenina; ny marina mamela ny fanaovan-tsary madinika ary ny diso mampitsahatra ny famoronana sary madinika vaovao</long>
+            </locale>
+
+            <locale name="mk">
+                <short>Вклучи правење на сликичи од XOJ документи</short>
+                <long>Достапни се boolean опции, штиклирано вклучува сликички, одштиклирано исклучува креирање на нови сликички</long>
+            </locale>
+
+            <locale name="mr">
+                <short>XOJ दस्तावेजांच्या छोट्या प्रतीमा करा</short>
+                <long>द्विस्थीती पर्याय उपलब्ध, खरे निवडल्यास छोट्या प्रतीमा तयार केल्या जातात आणि खोटे  छोट्या प्रतीमा तयार करण्यास प्रतिबंध करते</long>
+            </locale>
+
+            <locale name="nb">
+                <short>Aktiver generering av miniatyrer for XOJ-dokumenter</short>
+                <long>To boolske verdier er tilgjengelig. «true» aktiverer miniatyrer og «false» deaktiverer oppretting av nye miniatyrer.</long>
+            </locale>
+
+            <locale name="ne">
+                <short>पि डि एफ कागजातहरुको थम्बनेल गर्ने सक्षम पार्नुहोस्</short>
+                <long>बुलियन विकल्पहरू उपलब्ध छ, थम्बनेलको सत्य सक्षमहरू र गलत अक्षमहरूले नयाँ थम्बनेलहरुको सिर्जना गर्दछ </long>
+            </locale>
+
+            <locale name="nl">
+                <short>Miniaturen aanzetten voor XOJ-documenten</short>
+                <long>Boolese opties beschikbaar, true zet miniaturen aan en bij false worden er geen nieuwe miniaturen gemaakt</long>
+            </locale>
+
+            <locale name="nn">
+                <short>Slå på miniatyrikon av XOJ-dokument</short>
+                <long>Boolske val tilgjengelege. TRUE slår på miniatyrar og FALSE slår dei av.</long>
+            </locale>
+
+            <locale name="or">
+                <short>XOJ ଦଲିଲର କ୍ଷୁଦ୍ର ଚିତ୍ରଣ ପ୍ରକ୍ରିୟାକୁ ସକ୍ରିୟ କରନ୍ତୁ</short>
+                
+            </locale>
+
+            <locale name="pa">
+                <short>XOJ ਦਸਤਾਵੇਜ਼ ਲਈ ਥੰਮਨੇਲ ਯੋਗ</short>
+                <long>ਬੁਲੀਅਨ ਚੋਣਾਂ ਉਪਲੱਬਧ ਹਨ, ਸਹੀਂ ਨਾਲ ਥੰਮਨੇਲ ਯੋਗ ਹੋਵੇਗਾ ਅਤੇ ਗਲਤ ਨਾਲ ਨਵੇਂ ਥੰਮਨੇਲ ਨਹੀਂ ਬਣ ਸਕਣਗੇ।</long>
+            </locale>
+
+            <locale name="pl">
+                <short>Włącza tworzenie miniatur dokumentów XOJ</short>
+                <long>Dostępne są dwie opcje: prawda włącza miniatury, fałsz blokuje tworzenie nowych miniatur</long>
+            </locale>
+
+            <locale name="pt">
+                <short>Activar as imagens de referência de Documentos XOJ</short>
+                <long>Opções boleanas disponíveis, verdadeiro activa as imagens de referência e falso desactiva a criação de novas imagens de referência</long>
+            </locale>
+
+            <locale name="pt_BR">
+                <short>Habilitar a miniaturização de documentos XOJ</short>
+                <long>Opções booleanas disponíveis: verdadeiro habilita a miniaturização e falso desabilita a criação de novas miniaturas</long>
+            </locale>
+
+            <locale name="ro">
+                <short>Activare miniaturi pentru documente XOJ</short>
+                <long>Opţiuni disponibile: „true” permite crearea de noi miniaturi, iar  &apos;false&apos; dezactivează crearea de noi miniaturi</long>
+            </locale>
+
+            <locale name="ru">
+                <short>Включить создание образцов для документов XOJ</short>
+                <long>Возможно логическое значение, true включает создание образцов, а false выключает</long>
+            </locale>
+
+            <locale name="sk">
+                <short>Povoliť vytváranie náhľadov XOJ dokumentov</short>
+                <long>Dostupné booleanovské možnosti, true povolí náhľady a false zakáže vytváranie nových náhľadov</long>
+            </locale>
+
+            <locale name="sl">
+                <short>Omogoči sličice dokumentov XOJ</short>
+                <long>Na voljo sta Boolovi vrednosti: resnično omogoča izdelavo sličic, napačno pa onemogoča</long>
+            </locale>
+
+            <locale name="sq">
+                <short>Aktivo krijimin e miniaturave të dokumentëve XOJ</short>
+                <long>Opcionet booleane në dispozicion, true aktivon krijimin e miniaturave dhe false çaktivon krijimin e miniaturave të reja</long>
+            </locale>
+
+            <locale name="sr">
+                <short>Укључи прављење сличица за XOJ документе</short>
+                <long>Доступне истинитосне вредности, постављање укључује приказ сличица за стране, а искључивање зауставља прављење нових сличица</long>
+            </locale>
+
+            <locale name="sr@Latn">
+                <short>Uključi pravljenje sličica za XOJ dokumente</short>
+                <long>Dostupne istinitosne vrednosti, postavljanje uključuje prikaz sličica za strane, a isključivanje zaustavlja pravljenje novih sličica</long>
+            </locale>
+
+            <locale name="sv">
+                <short>Aktivera miniatyrbilder för XOJ-dokument.</short>
+                <long>Booleska alternativ tillgängliga, sant aktiverar skapande av miniatyrbilder och falskt inaktiverar skapandet av nya miniatyrbilder</long>
+            </locale>
+
+            <locale name="ta">
+                <short>XOJ ஆவணங்களுக்கு சிறுபடத்தை செயல்படுத்துகிறது</short>
+                <long>பூலியன் விருப்பங்கள் உள்ளன, சரி சிறுபடத்தை செயல்படுத்துகிறது மற்றும் தவறு புதிய சிறுபடங்கள்உருவாக்கத்தை செயல்நீக்குகிறது</long>
+            </locale>
+
+            <locale name="te">
+                <short>XOJ పత్రాలను చిరుచిత్రాలుగా క్రియాశీలీకరించు</short>
+                
+            </locale>
+
+            <locale name="th">
+                <short>เปิดใช้การแสดงภาพย่อของเอกสาร XOJ</short>
+                <long>ค่าบูลีน ค่าจริงหมายถึงเปิดใช้การแสดงภาพย่อ และค่าเท็จหมายถึงปิดการแสดงภาพย่อภาพใหม่</long>
+            </locale>
+
+            <locale name="tr">
+                <short>XOJ Belgelerin küçük resimlerinin etkinliği</short>
+                <long>Mantıksal değerler geçerlidir, seçili ise küçük resimler etkindir ve eğer seçili değilse küçük resim oluşturma devre dışı olur</long>
+            </locale>
+
+            <locale name="uk">
+                <short>Увімкнути перегляд документів XOJ</short>
+                <long>Можливе логічне значення. true вмикає створення зображення, а false вимикає</long>
+            </locale>
+
+            <locale name="vi">
+                <short>Hiển thị hình thu nhỏ của tài liệu XOJ</short>
+                <long>Giá trị logic: &apos;đúng&apos; hiển thị hình thu nhỏ và &apos;sai&apos; ẩn hình thu nhỏ</long>
+            </locale>
+
+            <locale name="zh_CN">
+                <short>启用 XOJ 文档的缩略图</short>
+                <long>布尔值选项，TRUE 代表允许缩略图，FALSE 代表禁止创建新缩略图</long>
+            </locale>
+
+            <locale name="zh_HK">
+                <short>啟動 XOJ 文件的縮圖功能</short>
+                <long>可用的邏輯選項中，“true”開啟縮圖功能，而“false”停止建立新的縮圖</long>
+            </locale>
+
+            <locale name="zh_TW">
+                <short>啟動 XOJ 文件的縮圖功能</short>
+                <long>可用的布林選項中，“true”開啟縮圖功能，而“false”停止建構新的縮圖</long>
+            </locale>
+        </schema>
+
+
+        <schema>
+            <key>/schemas/desktop/gnome/thumbnailers/application@x-xoj/command</key>
+            <applyto>/desktop/gnome/thumbnailers/application@x-xoj/command</applyto>
+            <owner>xournal</owner>
+            <type>string</type>
+            <default>xournal-thumbnailer -s %s %u %o</default>
+            <locale name="C">
+                <short>Thumbnail command for XOJ Documents</short>
+                <long>Valid command plus arguments for the XOJ Document thumbnailer.  See nautilus thumbnailer documentation for more information.</long>
+            </locale>
+
+            <locale name="ar">
+                <short>أمر المُسْتعْرضات لمستندات XOJ</short>
+                <long>أمر صالِح بالإضافة إلى متغيرات لمصغّر الصور الخاص بمستندات XOJ. راجع توثيق مصغّر الصور لنوتلس للمزيد من المعلومات</long>
+            </locale>
+
+            <locale name="be">
+                <short>Загад стварэньня мініатураў для XOJ дакумэнтаў</short>
+                <long>Рэчаісны загад і аргумэнты для стваральніка мініятураў для XOJ дакумэнтаў. Гл. дакумэнтацыю для nautilus thumbnailer.</long>
+            </locale>
+
+            <locale name="be@latin">
+                <short>Zahad stvareńnia minijaturaŭ dla dakumentaŭ XOJ</short>
+                <long>Pravilny zahad i arhumenty dla stvareńnia minijaturaŭ dla dakumentaŭ XOJ. Hladzi dakumentacyju na stvareńnie minijaturaŭ dla Nautilusa dziela padrabiaznaściaŭ.</long>
+            </locale>
+
+            <locale name="bg">
+                <short>Команда за създаване на мини изображения в документите от вид XOJ</short>
+                <long>Валидна команда заедно с аргументите си за създаването на мини изображения от документи от вид XOJ. За повече информация прегледайте документацията на nautilus за мини изображенията.</long>
+            </locale>
+
+            <locale name="bn">
+                <short>পি.ডি.এফ. ডকুমেন্টের থাম্বনেইল তৈরির কমান্ড</short>
+                <long>পি.ডি.এফ. ডকুমেন্টের থাম্বনেইল তৈরির জন্য সঠিক কমান্ড ও কমান্ড-আর্গুমেন্ট।  এ ব্যাপারে বিস্তারিত জানার জন্য নটিলাস এর থাম্বনেইল প্রস্তুত প্রক্রিয়ার ডকুমেন্টেশন দেখুন।</long>
+            </locale>
+
+            <locale name="bn_IN">
+                <short>XOJ ডকুমেন্টের জন্য ব্যবহারযোগ্য থাম্ব-নেইল কমান্ড</short>
+                <long>XOJ ডকুমেন্টেরর জন্য থাম্ব-নেইল নির্মাণে ব্যবহৃত বৈধ কমান্ড ও আর্গুমেন্ট। অধিক জানতে nautilus thumbnailer সংক্রান্ত নথিপত্র পড়ুন।</long>
+            </locale>
+
+            <locale name="ca">
+                <short>Ordre de miniatura per als documents XOJ</short>
+                <long>Ordre vàlida amb arguments addicionals per al miniaturitzador de documents XOJ. Per a més informació vegeu la documentació del miniaturitzador del nautilus.</long>
+            </locale>
+
+            <locale name="cs">
+                <short>Příkaz miniatury pro dokumenty XOJ</short>
+                <long>Platný příkaz a argumenty pro tvůrce miniatur dokumentu XOJ. Pro více informací viz dokumentaci tvůrce miniatur nautila.</long>
+            </locale>
+
+            <locale name="cy">
+                <short>Gorchymyn rhaglen creu lluniau cryno i ddogfennau XOJ</short>
+                <long>Gorchymyn dilys ag ymresymiadau i&apos;r rhaglen creu lluniau cryno i ddogfennau XOJ. Gweler dogfennau &quot;nautilus thumbnailer&quot; am wybodaeth bellach.</long>
+            </locale>
+
+            <locale name="da">
+                <short>Miniature-kommando til XOJ-dokumenter</short>
+                <long>Gyldig kommando plus parametre til miniaturegenerering af XOJ-dokumenter. Se dokumentationen for Nautilus&apos; miniaturegenerering for flere oplysninger.</long>
+            </locale>
+
+            <locale name="de">
+                <short>Vorschaukommando für XOJ-Dokumente</short>
+                <long>Zulässiges Kommando plus Argumente für die XOJ-Dokumentenvorschau. Bitte schauen Sie für weiterführende Informationen in der Dokumentation der Nautilus-Dokumentvorschau nach.</long>
+            </locale>
+
+            <locale name="dz">
+                <short>པི་ཌི་ཨེཕ་ཡིག་ཆ་ཚུ་གི་དོན་ལུ་ མཐེ་གཟེར་གྱི་བརྡ་བཀོད།</short>
+                <long>པི་ཌི་ཨེཕ་ཡིག་ཆ་ལུ་མཐེ་གཟེར་བརྡབས་མིའི་ ནུས་ཅན་བརྡ་བཀོད་དང་སྒྲུབ་རྟགས་ཚུ། བརྡ་དོན་ཧེང་བཀལ་གྱི་དོན་ལུ་ ནའུ་ཊི་ལཱསི་མཐེ་གཟེར་བརྡབས་མིའི་ཡིག་ཆ་ལུ་བལྟ།</long>
+            </locale>
+
+            <locale name="el">
+                <short>Εντολή για δημιουργία μικρογραφιών εγγράφων XOJ</short>
+                <long>Έγκυρη εντολή και επιλογές για τη δημιουργία μικρογραφιών εγγράφων τύπου
+XOJ. Δείτε την τεκμηριώση των μικρογραφιών του Ναυτίλου για περισσότερες
+πληροφορίες.</long>
+            </locale>
+
+            <locale name="es">
+                <short>Comando para sacar las miniaturas para los documentos XOJ</short>
+                <long>Comando válido y argumentos para el miniaturizador de documentos XOJ. Vea la documentación para el miniaturizador de Nautilus para más información.</long>
+            </locale>
+
+            <locale name="et">
+                <short>XOJ-dokumentidest pisipildi tegemise käsk</short>
+                <long>XOJ-dokumentide pisipilditegija käsk koos argumentidega. Lähema teabe saamiseks vaata nautiluse pisipilditegija dokumentatsiooni.</long>
+            </locale>
+
+            <locale name="eu">
+                <short>XOJ dokumentuen koadro txikiak sortzeko komandoa</short>
+                <long>Komando baliagarria gei argumentuak XOJ dokumentutako koadro txikiak sortzeko. Ikusi nautilus-enkoadro txikien dokumentazioa informazio gehiagorako.</long>
+            </locale>
+
+            <locale name="fa">
+                <short>فرمان مسطوره برای نوشتارهای XOJ</short>
+                <long>فرمان معتبر به همراه آرگومان‌هایی برای نوشتار XOJ. برای اطلاعات بیشتر مستندات مسطوره‌ساز ناتیلوس را ببینید.</long>
+            </locale>
+
+            <locale name="fi">
+                <short>Pienoiskuvakomento XOJ-asiakirjoille</short>
+                <long>Komento sekä argumentit XOJ-asiakirjan pienoiskuvien tuottamiseen. Katso lisätietoja nautiluksen pienoiskuvien tuottajan ohjeista.</long>
+            </locale>
+
+            <locale name="fr">
+                <short>Commande pour la création des vignettes des documents XOJ</short>
+                <long>Commande valide et ses arguments pour le créateur de vignettes des documents XOJ. Consultez la documentation de Nautilus thumbnailer pour plus d&apos;informations.</long>
+            </locale>
+
+            <locale name="gl">
+                <short>Comando para crear miniaturas para os documentos XOJ</short>
+                <long>Comando válido e argumentos para a aplicación de creación de miniaturas de documentos XOJ. Para máis información vexa a documentación sobre o miniaturizador do Nautilus.</long>
+            </locale>
+
+            <locale name="gu">
+                <short>XOJ દસ્તાવેજો માટે થમ્બનેઈલ આદેશ</short>
+                <long>XOJ દસ્તાવેજ થમ્બનેઈલ બનાવનાર માટે માન્ય આદેશ વત્તા દલીલો. વધુ જાણકારી માટે નોટીલસ થમ્બનેઈલ બનાવનાર દસ્તાવેજીકરણ જુઓ.</long>
+            </locale>
+
+            <locale name="hi">
+                <short>पीडीएफ के लिये लघु छवि दस्तावेज दस्तावेज़</short>
+                <long>XOJ दस्तावेज थंबनेलर के लिये वैध समादेश के साथ तर्क. nautilus थंबनेलर दस्तावजेन को ज्यादा जानकारी के लिये देखें.</long>
+            </locale>
+
+            <locale name="hu">
+                <short>Bélyegkép-készítő parancs XOJ-dokumentumokhoz</short>
+                <long>Érvényes parancs paraméterekkel a XOJ dokumentumokból való bélyegkép-készítéshez. További információkért lásd a nautilus bélyegkép-készítőjének dokumentációját.</long>
+            </locale>
+
+            <locale name="id">
+                <short>Perintah cuplikan kecil untuk dokumen XOJ</short>
+                <long>Perintah dan argumen yang benar untuk pencuplik kecil Dokumen XOJ. Lihat dokumentasi pencuplik kecil nautilus untuk informasi lebih lanjutnya.</long>
+            </locale>
+
+            <locale name="it">
+                <short>Comando di miniatura per i documenti XOJ</short>
+                <long>Un comando valido e gli argomenti per le miniature dei documenti XOJ. Per maggiori informazioni vedere la documentazione relativa alle miniature di nautilus.</long>
+            </locale>
+
+            <locale name="ja">
+                <short>XOJ ドキュメントのサムネイル表示コマンド</short>
+                <long>XOJ ドキュメントをサムネイル表示するための妥当なコマンドと引数です。詳細は Nautilus のサムネイル関連のドキュメントを参照して下さい。</long>
+            </locale>
+
+            <locale name="ka">
+                <short>XOJ დოკუმენტების ესკიზების ბრძანება </short>
+                <long>XOJ დოკუმენტების ესკიზების დამატებითი ბრძანებების შესახებ ინფორმაცია შეგიძლია იხილოთ Nautilus-ის ფაილ მენეჯერის დოკუმენტაციაში.</long>
+            </locale>
+
+            <locale name="ko">
+                <short>XOJ문서의 미리보기 만들기 명령</short>
+                <long>XOJ문서 미리보기 만들기의 올바른 명령과 인자. nautilus 미리보기 만들기 문서의 자세한 정보 참조.</long>
+            </locale>
+
+            <locale name="ku">
+                <short>Ji bo belgehên XOJ fermana wêneyên biçûk</short>
+                <long>Ji bo wênekerê biçûk yê Pelê XOJ parametreyên zêdek yên fermanên derbasdar. Ji bo agahiyên berfireh li belgeya wênekerên biçûk yên nautilusê binihêre.</long>
+            </locale>
+
+            <locale name="lt">
+                <short>Miniatiūrų komanda XOJ dokumentams</short>
+                <long>Tinkama XOJ dokumentų miniatiūrų kūrimo komanda su argumentais. Žiūrėkite Nautiliaus miniatiūrų generatoriaus dokumentaciją.</long>
+            </locale>
+
+            <locale name="lv">
+                <short>XOJ dokumentu sīktēlu komanda</short>
+                <long>XOJ sīktēlu veidotāja komandu un tās argumentus. Papildus informācijai aplūkojiet nautilus sīktēlu veidotāja dokumentāciju.</long>
+            </locale>
+
+            <locale name="mg">
+                <short>Baikon&apos;ny fanaovana sary madinika ho an&apos;ny tahirin-kevitra XOJ</short>
+                <long>Baiko mitombina miaraka amin&apos;ny tondriky ny mpanao sary madinika ho an&apos;ny tahirin-kevitra XOJ. Vakio ny loharanon-kevitry ny nautilus thumbnailer hahalalanao azy bebe kokoa.</long>
+            </locale>
+
+            <locale name="mk">
+                <short>Команда за сликички во XOJ</short>
+                <long>Валидна командата плус аргументите за сликичките во XOJ документ. Проверете ја документацијата на Наутилус за повеќе информации.</long>
+            </locale>
+
+            <locale name="mr">
+                <short>XOJ दस्तावेजांच्या छोट्या प्रतीमा करण्याचा आदेश</short>
+                
+            </locale>
+
+            <locale name="nb">
+                <short>Miniatyrbildekommando for XOJ-dokumenter</short>
+                <long>Gyldig kommando pluss argumenter for XOJ-dokument miniatyrbilder. Se i nautilus sin miniatyrbildedokumentasjon for mer informasjon.</long>
+            </locale>
+
+            <locale name="ne">
+                <short>पि डि एफ कागजातहरुका लागि थम्बनेल्स आदेश</short>
+                <long>XOJ कागजात थम्बनेलरका लागि वैध आदेश र तर्कहरू । धेरै जानकारीका लागि नटिलस थम्बनेलर मिसिलीकरण हर्नुहोस् ।</long>
+            </locale>
+
+            <locale name="nl">
+                <short>Opdracht voor miniaturen bij XOJ-documenten</short>
+                <long>Geldige opdracht plus argumenten voor de maker van miniaturen van XOJ-documenten. Zie de documentatie voor nautilus miniaturen voor meer informatie.</long>
+            </locale>
+
+            <locale name="nn">
+                <short>Miniatyrkommando for XOJ-dokument</short>
+                <long>Gyldig kommando pluss argument for miniatyrgeneratoren for XOJ-dokument. Sjå dokumentasjonen for «Nautilus Thumbnailer» for meir informasjon.</long>
+            </locale>
+
+            <locale name="or">
+                <short>XOJ ଦଲିଲ ପାଇଁ କ୍ଷୁଦ୍ର ଚିତ୍ର ନିର୍ଦ୍ଦେଶ</short>
+                
+            </locale>
+
+            <locale name="pa">
+                <short>XOJ ਦਸਤਾਵੇਜ਼ ਲਈ ਥੰਮਨੇਲ ਕਮਾਂਡ</short>
+                <long>XOJ ਦਸਤਾਵੇਜ਼ ਥੰਮਨੇਲਰ ਲਈ ਠੀਕ ਕਮਾਂਡ ਅਤੇ ਮੁੱਲ। ਵਧੇਰੇ ਜਾਣਕਾਰੀ ਲਈ ਨਟਾਲਿਸ ਥੰਮਨੇਲਰ ਦਸਤਾਵੇਜ਼ ਵੇਖੋ।</long>
+            </locale>
+
+            <locale name="pl">
+                <short>Polecenie tworzenia miniatur dla dokumentów XOJ</short>
+                <long>Prawidłowe polecenie wraz z parametrami dla generatora miniatur XOJ. Więcej informacji można znaleźć w dokumentacji generatora miniatur programu Nautilus.</long>
+            </locale>
+
+            <locale name="pt">
+                <short>Comando de criação de imagens de referência para Documentos XOJ</short>
+                <long>Comando válido e argumentos para a aplicação de geração de imagens de referência de Documentos XOJ. Consulte a documentação de imagens de referência do nautilus para mais informações.</long>
+            </locale>
+
+            <locale name="pt_BR">
+                <short>Comando de miniatura para documentos XOJ</short>
+                <long>Comando válido mais argumentos para o miniaturizador de documentos XOJ. Ver a documentação do miniaturizador do nautilus para mais informações.</long>
+            </locale>
+
+            <locale name="ro">
+                <short>Program pentru crearea de miniaturi ale documentelor XOJ</short>
+                <long>Comandă validă şi argumente necesare pentru crearea de miniaturi ale documentelor XOJ. Pentru detalii, consultaţi documentaţia „nautilus thumbnailer”.</long>
+            </locale>
+
+            <locale name="ru">
+                <short>Команда создания образцов для документов XOJ</short>
+                <long>Команда и аргументы для запуска программы создания изображения документа XOJ. Для получений дополнительной информации смотрите документацию по Nautilus.</long>
+            </locale>
+
+            <locale name="sk">
+                <short>Príkaz náhľadu pre XOJ dokumenty</short>
+                <long>Platný príkaz s parametrami pre náhľady XOJ dokumentu. Pre ďalšie informácie si pozrite dokumentáciu náhľadov k Nautilu.</long>
+            </locale>
+
+            <locale name="sl">
+                <short>Ukaz za sličice dokumentov XOJ</short>
+                <long>Veljaven ukaz z argumenti za izdelovalca sličic dokumentov XOJ. Za več informacij si oglejte dokumentacijo izdelovalca sličic v Nautilusu.</long>
+            </locale>
+
+            <locale name="sq">
+                <short>Komanda për miniaturat e dokumentëve XOJ</short>
+                <long>Komanda e vlefshme plus argumentët për krijimin e miniaturave të dokumentit XOJ. Shiko dokumentet e krijuesit të miniaturave nautilus për informacione të mëtejshme.</long>
+            </locale>
+
+            <locale name="sr">
+                <short>Наредба за прављење сличица за XOJ документе</short>
+                <long>Исправна наредба уз аргументе за прављење сличица за XOJ документе. Погледајте документацију за сличице из Наутилуса за више података.</long>
+            </locale>
+
+            <locale name="sr@Latn">
+                <short>Naredba za pravljenje sličica za XOJ dokumente</short>
+                <long>Ispravna naredba uz argumente za pravljenje sličica za XOJ dokumente. Pogledajte dokumentaciju za sličice iz Nautilusa za više podataka.</long>
+            </locale>
+
+            <locale name="sv">
+                <short>Miniatyrbildskommando för XOJ-dokument</short>
+                <long>Giltigt kommando plus argument för skaparen av miniatyrbilder av XOJ-dokument. Se nautilus-dokumentationen om miniatyrbildsskapare för mer information.</long>
+            </locale>
+
+            <locale name="ta">
+                <short>XOJ ஆவணங்களுக்கான சிறுபட கட்டளைகள்</short>
+                <long>XOJ ஆவண சிறு படங்களுக்கு சரியான கட்டளை மற்றும் மதிப்புகள் உள்ளன. மேலும் தகவல்களுக்கு nautilus சிறுபட ஆவணமாக்கத்தை பார்க்கவும்.</long>
+            </locale>
+
+            <locale name="te">
+                <short>XOJ పత్రాలకు చిరుచిత్ర ఆదేశం</short>
+                <long>XOJ పత్ర చిరుచిత్రానికి వర్తించదగిన ఆదేశాలు. ఎక్కువ సమాచారం కోసం నాటిలస్ చిరుచిత్ర పత్రాన్ని చూడండి</long>
+            </locale>
+
+            <locale name="th">
+                <short>คำสั่งย่อภาพสำหรับเอกสาร XOJ</short>
+                <long>คำสั่งพร้อมอาร์กิวเมนต์สำหรับการแสดงภาพย่อของเอกสาร XOJ อ่านข้อมูลเพิ่มเติมได้จากเอกสารตัวแสดงภาพย่อของ Nautilus</long>
+            </locale>
+
+            <locale name="tr">
+                <short>XOJ Belgeleri için küçük resim komutu</short>
+                <long>XOJ Belge küçük resimleyicisi için geçerli komut artı parametreleri. Daha fazla bilgi için nautilus küçük resimleyici belgesine bakın.</long>
+            </locale>
+
+            <locale name="uk">
+                <short>Команда створення мініатюр для документів XOJ</short>
+                <long>Команда та аргументи для запуску команди створення мініатюр документа XOJ. Додаткову інформацію дивіться у документації з nautilus.</long>
+            </locale>
+
+            <locale name="vi">
+                <short>Lệnh tạo hình thu nhỏ cho tài liệu XOJ</short>
+                <long>Lệnh hợp lệ cộng với đối số cho bộ tạo hình thu nhỏ tài liệu XOJ. Xem tài liệu hướng dẫn Nautilus về hình thu nhỏ để biết thêm thông tin.</long>
+            </locale>
+
+            <locale name="zh_CN">
+                <short>XOJ 文档的缩略图命令</short>
+                <long>生成 XOJ 文档缩略图的有效命令及参数。请参看 nautilus 的缩略图生成文档中的更多信息。</long>
+            </locale>
+
+            <locale name="zh_HK">
+                <short>XOJ 文件的縮圖命令</short>
+                <long>正確的指令加上代表 XOJ 文件縮圖的選項。請參見 nautilus 縮圖文件以得到更多資訊。</long>
+            </locale>
+
+            <locale name="zh_TW">
+                <short>XOJ 文件的縮圖命令</short>
+                <long>正確的指令加上代表 XOJ 文件縮圖的選項。請參見 nautilus 縮圖文件以得到更多資訊。</long>
+            </locale>
+        </schema>
+    </schemalist>
+</gconfschemafile>

@@ -1,0 +1,44 @@
+ref: http://sourceforge.net/tracker/?func=detail&aid=1817573&group_id=163434&atid=827735
+
+main.c.patch is a patch that allows you to use xournal as a xoj to pdf 
+converter like this:
+
+xournal in.xoj out.pdf
+
+It simply starts xournal normally, but doesn't set the main window to be 
+visible.  Then it exports the xoj file to a pdf and exits.
+
+xournal-thumbnailer is a perl script with the same command line 
+interface as evince-thumbnailer.  It requires evince-thumbnailer, and 
+has been tested with nautilus.
+
+xoj-thumbnailer.schemas is a gconf schema file that will register 
+xournal-thumbnailer with the gnome thumbnailing system.
+
+Current limitations:  
+
+Although xournal will not set its main window visible when invoked in 
+this manner, it still has to connect to the X server to work. 
+
+Sometimes xournal opens dialog boxes when importing files (such as when 
+it cannot find the background pdf).  These dialogs will be displayed 
+during command line conversion from xoj to pdf.
+
+I haven't checked the non-english translations in 
+xoj-thumbnailer.schemas.  I produced the file by stealing the schemas 
+from evince's thumbnailer, and replacing "PDF" with "XOJ".
+
+To install:
+
+After applying the patch, compile and install xournal as normal.  Copy 
+xournal-thumbnailer to a directory in your path.  Copy 
+xoj-thumbnailer.schemas into your schemas directory, and run these
+commands (as root).
+
+$ export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
+
+$ gconftool-2 --makefile-install-rule /usr/share/gconf/schemas/xoj-thumbnailer.schemas
+
+(I really don't know very much about gconf; but these instructions 
+worked for me...  I found them at http://www.gnome.org/projects/gconf/ 
+under "application developer information")

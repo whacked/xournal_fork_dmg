@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w
+use strict;
+
+my $size;
+my $in;
+my $out;
+
+if($ARGV[0] eq "-s") {
+    $size = $ARGV[1];
+    $in   = $ARGV[2];
+    $out  = $ARGV[3];
+} else {
+    $in   = $ARGV[0];
+    $out  = $ARGV[1];
+}
+
+$in =~ s~^file\://~~;
+$out =~ s~^file\://~~;
+
+my $TMP=`mktemp -p /tmp xournal-thumbnailerXXXXXXX` || die;
+chomp $TMP;
+my $ret = system("xournal $in -o $TMP");
+
+if(!defined $size) {
+    $ret =system("evince-thumbnailer $TMP $out") || $ret;
+} else {
+    $ret =system("evince-thumbnailer -s $size $TMP $out") || $ret;
+}
+system("rm $TMP");
+
+exit $ret;
