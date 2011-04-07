@@ -18,11 +18,13 @@
 
 static gint openAtPageNumber = 1;
 static const char **fileArguments = NULL;
+static gchar *outputFileName = NULL;
 
 
 static GOptionEntry entries[] = 
 {
   { "page", 'p', 0, G_OPTION_ARG_INT, &openAtPageNumber, "Jump to Page", "N" },
+  { "output", 'o', 0, G_OPTION_ARG_STRING, &outputFileName, "pdf file name to write to", "filename" },
   { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &fileArguments, NULL, N_("[FILE...]") },
   { NULL }
 };
@@ -203,27 +205,43 @@ void init_stuff (int argc, char *argv[])
   ui.screen_width = gdk_screen_get_width(screen);
   ui.screen_height = gdk_screen_get_height(screen);
   
-  can_xinput = FALSE;
-  dev_list = gdk_devices_list();
-  while (dev_list != NULL) {
-    device = (GdkDevice *)dev_list->data;
-    if (device != gdk_device_get_core_pointer()) {
-      /* get around a GDK bug: map the valuator range CORRECTLY to [0,1] */
-#ifdef ENABLE_XINPUT_BUGFIX
-      gdk_device_set_axis_use(device, 0, GDK_AXIS_IGNORE);
-      gdk_device_set_axis_use(device, 1, GDK_AXIS_IGNORE);
-#endif
-      gdk_device_set_mode(device, GDK_MODE_SCREEN);
-      if (g_str_has_suffix(device->name, "eraser"))
-        gdk_device_set_source(device, GDK_SOURCE_ERASER);
-      can_xinput = TRUE;
-    }
-    dev_list = dev_list->next;
-  }
-  if (!can_xinput)
-    gtk_widget_set_sensitive(GET_COMPONENT("optionsUseXInput"), FALSE);
+  // here is the command line "option" is handled
 
-  ui.use_xinput = ui.allow_xinput && can_xinput;
+  context = g_option_context_new ("Xournal");
+  g_option_context_add_main_entries (context, entries, GETTEXT_PACKAGE);
+  g_option_context_add_group (context, gtk_get_option_group (TRUE));
+  if (!g_option_context_parse (context, &argc, &argv, &error)) {
+    g_printerr ("Cannot parse arguments: %s\n", error->message);
+    g_error_free (error);
+    g_option_context_free (context);
+    gtk_exit(0);
+  }
+  g_option_context_free (context);
+  
+  gboolean output_and_exit = g_utf8_strlen(outputFileName, -1) > 0;
+
+  if(!output_and_exit) {
+    can_xinput = FALSE;
+    dev_list = gdk_devices_list();
+    while (dev_list != NULL) {
+      device = (GdkDevice *)dev_list->data;
+      if (device != gdk_device_get_core_pointer()) {
+        /* get around a GDK bug: map the valuator range CORRECTLY to [0,1] */
+#ifdef ENABLE_XINPUT_BUGFIX
+        gdk_device_set_axis_use(device, 0, GDK_AXIS_IGNORE);
+        gdk_device_set_axis_use(device, 1, GDK_AXIS_IGNORE);
+#endif
+        gdk_device_set_mode(device, GDK_MODE_SCREEN);
+        if (g_str_has_suffix(device->name, "eraser"))
+          gdk_device_set_source(device, GDK_SOURCE_ERASER);
+        can_xinput = TRUE;
+      }
+      dev_list = dev_list->next;
+    }
+    if (!can_xinput)
+      gtk_widget_set_sensitive(GET_COMPONENT("optionsUseXInput"), FALSE);
+    ui.use_xinput = ui.allow_xinput && can_xinput;
+  }
 
   gtk_check_menu_item_set_active(
     GTK_CHECK_MENU_ITEM(GET_COMPONENT("optionsProgressiveBG")), ui.progressive_bg);
@@ -249,8 +267,10 @@ void init_stuff (int argc, char *argv[])
 
   // show everything...
   
-  gtk_widget_show (winMain);
-  update_cursor();
+  if(!output_and_exit) {
+    gtk_widget_show (winMain);
+    update_cursor();
+  }
 
   /* this will cause extension events to get enabled/disabled, but
      we need the windows to be mapped first */
@@ -291,19 +311,6 @@ void init_stuff (int argc, char *argv[])
   
   init_mru();
 
-  // here is the command line "option" is handled
-
-  context = g_option_context_new ("Xournal");
-  g_option_context_add_main_entries (context, entries, GETTEXT_PACKAGE);
-  g_option_context_add_group (context, gtk_get_option_group (TRUE));
-  if (!g_option_context_parse (context, &argc, &argv, &error)) {
-    g_printerr ("Cannot parse arguments: %s\n", error->message);
-    g_error_free (error);
-    g_option_context_free (context);
-    gtk_exit(0);
-  }
-  g_option_context_free (context);
-
   // and finally, open a file specified on the command line
   // (moved here because display parameters weren't initialized yet...)
   
@@ -321,22 +328,36 @@ void init_stuff (int argc, char *argv[])
   success = open_journal(tmpfn);
   g_free(tmpfn);
   set_cursor_busy(FALSE);
-  if (!success) {
-	  #ifdef IMAGE_DEBUG
-	  printf("error opening file '%s'\n",fileArguments[0]);
-	  #endif
-    w = gtk_message_dialog_new(GTK_WINDOW (winMain), GTK_DIALOG_DESTROY_WITH_PARENT,
-       GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Error opening file '%s'"), fileArguments[0]);
-    gtk_dialog_run(GTK_DIALOG(w));
-    gtk_widget_destroy(w);
+
+  if(!success) {
+    #ifdef IMAGE_DEBUG
+    printf("error opening file '%s'\n",fileArguments[0]);
+    #endif
   }
-  // jump to desired page, if requested...
-  if (openAtPageNumber > 1) {
-    //fprintf(stderr, "Jumping to page %d out of %d pages \n", openAtPageNumber, journal.npages);
-    if (openAtPageNumber > journal.npages)
-      // if user wants to jump too far away, then use last page
-      openAtPageNumber = journal.npages;
-    do_switch_page(openAtPageNumber - 1, TRUE, TRUE);
+
+  if(output_and_exit) {
+    if(!success) {
+      gtk_exit(1);
+    } else {
+      print_to_pdf(outputFileName);
+      gtk_exit(0);
+    }
+  }
+  else {
+    if (!success) {
+      w = gtk_message_dialog_new(GTK_WINDOW (winMain), GTK_DIALOG_DESTROY_WITH_PARENT,
+         GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Error opening file '%s'"), fileArguments[0]);
+      gtk_dialog_run(GTK_DIALOG(w));
+      gtk_widget_destroy(w);
+    }
+    // jump to desired page, if requested...
+    if (openAtPageNumber > 1) {
+      //fprintf(stderr, "Jumping to page %d out of %d pages \n", openAtPageNumber, journal.npages);
+      if (openAtPageNumber > journal.npages)
+        // if user wants to jump too far away, then use last page
+        openAtPageNumber = journal.npages;
+      do_switch_page(openAtPageNumber - 1, TRUE, TRUE);
+    }
   }
 }
 
