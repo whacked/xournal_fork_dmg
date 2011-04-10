@@ -16,6 +16,8 @@
 #include "xo-paint.h"
 #include "xo-shapes.h"
 
+#include "xo-pagestuff.c"
+
 static gint openAtPageNumber = 1;
 static const char **fileArguments = NULL;
 static gchar *outputFileName = NULL;
@@ -397,7 +399,23 @@ main (int argc, char *argv[])
   init_stuff (argc, argv);
   gtk_window_set_icon(GTK_WINDOW(winMain), create_pixbuf("xournal.png"));
   
+  // if just loaded a file itself, and there's a background pdf
+  // check to see if we have a last open page stored, and jump to it
+  if(argc == 2 && bgpdf.status == STATUS_READY) {
+      init_file_hash();
+      //printf("last open page: %d\n", get_last_open_page());
+      int last_open_page_number = get_last_open_page();
+      if(last_open_page_number > 0) {
+          do_switch_page(last_open_page_number - 1, TRUE, TRUE);
+      }
+  }
+  
   gtk_main ();
+
+  if(bgpdf.status == STATUS_READY) {
+      //printf("last open page: %d\n", ui.pageno+1);
+      set_last_open_page(ui.pageno+1);
+  }
   
   if (bgpdf.status != STATUS_NOT_INIT) shutdown_bgpdf();
 
