@@ -867,6 +867,9 @@ static GtkWidget *entry1 = NULL;
                   g_free(outfile);
                   g_free(outdir);
 
+                  // also save the xoj!
+                  on_fileSave_activate(NULL, NULL);
+
               }
           }
       }
