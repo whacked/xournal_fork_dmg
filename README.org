@@ -5,7 +5,8 @@ is currently the *only* open source note-taking software that has top-notch anno
 ** USE AT YOUR OWN RISK.
 
 - compiles & works for me on ubuntu 10.10
-- OSX 10.6.4, 10.5.8: install deps with MacPorts ( =sudo port install xournal= ), and replace the MacPorts xournal
+- OSX 10.6.4, 10.5.8: install deps with MacPorts ( =sudo port install xournal= ), and replace the MacPorts xournal. as of 2011-02 untested and you'll need some extra libraries
+- libgcrypt11-dev + libsqlite3 for bookmark function
 
 ** contains these modifications:
 
@@ -14,29 +15,21 @@ is currently the *only* open source note-taking software that has top-notch anno
 contains egg_find_toolbar, allows search. jumps to the next page in the pdf that contains the word in the search field
 
 *** highlight search results
-  - clicking "Find next" in the search bar will highlight matches. again, the search begins on the NEXT page.
-    - so if you are looking for something on the current page, either scroll backwards, or you have to wrap around
-  - it only displays highlights in the current page of the search. if you scroll to any other page, there will be no highlights
-  - the highlights are destroyed when you jump to the next page
-  - *if you want to remove the highlight your only choice then is to search for an inexistent string*
-  - the highlights are stored in a global variable =searchLayer=
-  - search for =0xffff0080= in xo-callbacks.c to change the highlight color
+    - clicking "Find next" in the search bar will highlight matches. again, the search begins on the NEXT page.
+      - so if you are looking for something on the current page, either scroll backwards, or you have to wrap around
+    - it only displays highlights in the current page of the search. if you scroll to any other page, there will be no highlights
+    - the highlights are destroyed when you jump to the next page
+    - *if you want to remove the highlight your only choice then is to search for an inexistent string*
+    - the highlights are stored in a global variable =searchLayer=
+    - search for =0xffff0080= in xo-callbacks.c to change the highlight color
 
-*** select text & copy to clipboard
-  - 2011-01-31 changed selectRect code (swap y1 & y2), somehow this makes selection more correct
-  - rectanglular select tool, using SelectRectangle code, but in =finalize_selecttext=, call =poppler_page_get_text= on the rect region
-  - popup dialog after select to confirm copy to clipboard
-  - rectangular selection is not actually rectangular. it wraps around
-  - search for =0x40409040= in xo-paint.c (in =start_selecttext=) to change select box color
-  - 2011-02-05 looks like it segfaults if there isn't a background pdf?
+*** select text & copy to clipboard & output selection screenshot
+    - rectanglular select tool, using SelectRectangle code, but in =finalize_selecttext=, call =poppler_page_get_text= on the rect region
+    - popup dialog after select to confirm copy to clipboard
+    - search for =0x40409040= in xo-paint.c (in =start_selecttext=) to change select box color
 
-** current issues with the "search" and "copy text" function
-  - I'm not confident about the freeing memory part in the highlighting matches functions ( =find_pdf_matches= )
-  - "Previous match" in the search toolbar causes segfault
-  - i hope to modify the search behavior so it begins search on the current page
-  - the "dodraw" flag hack was a crappy attempt at this. find it in the =find_pdf_matches= function; not going to last
-  - probably =poppler_page_get_text= behavior -- if somehow your rectangle doesn't get stuff it seems to return a large block of text. i don't know exactly what it does... i just retry my selection. better than having to open Preview!
-  - i also get "failed assertion of point != NULL" or something of that sort
+*** auto save and load last opened page
+    when you open a pdf, xournal will jump to the last viewed page (unless overridden with dmgerman's page number command line argument). requires =sqlite3-dev= and =libgcrypt11-dev=. stores and reads ~/.xournal/xournal.db
 
 ** errata (probably should go somewhere else)
 
@@ -66,10 +59,24 @@ autocmd FileAppendPost      *.xoj  call gzip#write("gzip -S .xoj")
    - pretty pretty icon
    - investigate multitouch support
 
-last update <2011-01-31 Mon 01:06>
+** issues
+
+*** current issues with the "search" and "copy text" function
+   - I'm not confident about the freeing memory part in the highlighting matches functions ( =find_pdf_matches= )
+   - "Previous match" in the search toolbar causes segfault
+   - i hope to modify the search behavior so it begins search on the current page
+   - the "dodraw" flag hack was a crappy attempt at this. find it in the =find_pdf_matches= function; not going to last
+   - probably =poppler_page_get_text= behavior -- if somehow your rectangle doesn't get stuff it seems to return a large block of text. i don't know exactly what it does... i just retry my selection. better than having to open Preview!
+   - i also get "failed assertion of point != NULL" or something of that sort
 
 ** other update list
 - 2011-01-31 safe pdf backgrounds with relative filepath if same basepath found
 - 2011-02-01 added image extraction. copy to clipboard after text selection will now automatically save a png of the selected region; the png filename is written to ~/.xournal/extract.log for hook use
 - 2011-02-01 executes the file found at =~/.xournal/hook-post-extract= if it exists
 - 2011-02-05 actually create an undoable rectangle item where text-selection was used; mostly copy pasta from the stroke
+- 2011-04-07 added files and modifications for nautilus thumbnail support by russell sears
+- 2011-04-09 adding auto-bookmark and restore last-read page function
+
+** more generalized changelog
+  - 2011-01-31 changed selectRect code (swap y1 & y2), somehow this makes selection more correct
+  - 2011-02-05 looks like it segfaults if there isn't a background pdf?
