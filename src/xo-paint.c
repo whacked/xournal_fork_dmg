@@ -620,16 +620,22 @@ void finalize_selecttext(void)
   poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
   // y1 and y2 seem to be inverted coordinate system than GTK canvas bounding box
   //PopplerRectangle selectRect = { x1, pg_ht - y1, x2, pg_ht - y2 };
-  PopplerRectangle selectRect = { x1, pg_ht - y2, x2, pg_ht - y1 };
+
+  // uhh the coordinates are different again
+  // old:
+  // PopplerRectangle selectRect = { x1, pg_ht - y2, x2, pg_ht - y1 };
+  // new: Mon May 30 02:48:28 EDT 2011 
+  PopplerRectangle selectRect = { x1, y1, x2, y2 };
   //PopplerRectangle selectRect = { 173.488434, 676.994867, 234.984334, 710.492634 };
 
     char *selectedText;
 
-#ifdef HAVE_POPPLER_PAGE_GET_SELECTED_TEXT
     selectedText = poppler_page_get_selected_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
-#else
-    selectedText = poppler_page_get_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
-#endif
+//#ifdef HAVE_POPPLER_PAGE_GET_SELECTED_TEXT
+//    selectedText = poppler_page_get_selected_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+//#else
+//    selectedText = poppler_page_get_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+//#endif
 
     int save_png_extraction = 0;
   if (strlen(selectedText) == 0) {
