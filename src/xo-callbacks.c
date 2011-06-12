@@ -22,8 +22,6 @@
 #include "xo-shapes.h"
 #include "eggfindbar.h"
 
-#include "ax-helper.h"
-
 void
 on_fileNew_activate                    (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
@@ -2966,7 +2964,6 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
   
   double pg_wd, pg_ht;
   poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
-  //  ax_display_coord_to_pdf(1,1);
   
   PopplerRectangle selectRect = { mouse_x, pg_ht - mouse_y, mouse_x + 10, pg_ht - mouse_y + 10 };
   char * selectedText = poppler_page_get_text(pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
