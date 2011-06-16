@@ -2966,7 +2966,15 @@ on_canvas_motion_notify_event          (GtkWidget       *widget,
   poppler_page_get_size(pdfPage, &pg_wd, &pg_ht);
   
   PopplerRectangle selectRect = { mouse_x, pg_ht - mouse_y, mouse_x + 10, pg_ht - mouse_y + 10 };
-  char * selectedText = poppler_page_get_text(pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+  // hack! see below.
+  char * selectedText = poppler_page_get_selected_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+// my HAVE_POPPLER_PAGE_GET_SELECTED_TEXT doesn't seem to be working atm
+// but this should be the better way to do it
+//#ifdef HAVE_POPPLER_PAGE_GET_SELECTED_TEXT
+//    char * selectedText = poppler_page_get_selected_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+//#else
+//    char * selectedText = poppler_page_get_text (pdfPage, POPPLER_SELECTION_GLYPH, &selectRect);
+//#endif
   
   if (strlen(selectedText) == 0) {
     //printf("NOTHING FOUND !  = = = = = = = = = = = = = = = = = = = = = =\n");
