@@ -47,6 +47,7 @@ void update_color_menu(void);
 void update_pen_props_menu(void);
 void update_eraser_props_menu(void);
 void update_highlighter_props_menu(void);
+void update_selecttext_props_menu(void);
 void update_mappings_menu_linkings(void);
 void update_mappings_menu(void);
 void update_page_stuff(void);

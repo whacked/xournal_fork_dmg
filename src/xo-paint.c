@@ -729,7 +729,7 @@ static GtkWidget *entry1 = NULL;
               ui.cur_item_type = ITEM_STROKE;
               ui.cur_item = g_new(struct Item, 1);
               ui.cur_item->type = ITEM_STROKE;
-              ui.cur_brush = &(ui.brushes[ui.cur_mapping][TOOL_HIGHLIGHTER]);
+              ui.cur_brush = &(ui.brushes[ui.cur_mapping][TOOL_SELECTTEXT]);
               g_memmove(&(ui.cur_item->brush), ui.cur_brush, sizeof(struct Brush));
               ui.cur_item->path = &ui.cur_path;
               realloc_cur_path(10);

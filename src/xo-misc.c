@@ -855,7 +855,9 @@ void update_color_buttons(void)
   GtkColorButton *colorbutton;
   
   if (ui.selection!=NULL || (ui.toolno[ui.cur_mapping] != TOOL_PEN 
-      && ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER && ui.toolno[ui.cur_mapping] != TOOL_TEXT)) {
+      && ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER 
+      && ui.toolno[ui.cur_mapping] != TOOL_SELECTTEXT 
+      && ui.toolno[ui.cur_mapping] != TOOL_TEXT)) {
     gtk_toggle_tool_button_set_active(
       GTK_TOGGLE_TOOL_BUTTON(GET_COMPONENT("buttonColorOther")), TRUE);
   } else
@@ -912,11 +914,13 @@ void update_color_buttons(void)
   colorbutton = GTK_COLOR_BUTTON(GET_COMPONENT("buttonColorChooser"));
   if ((ui.toolno[ui.cur_mapping] != TOOL_PEN && 
        ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER && 
+       ui.toolno[ui.cur_mapping] != TOOL_SELECTTEXT && 
        ui.toolno[ui.cur_mapping] != TOOL_TEXT))
     gdkcolor.red = gdkcolor.blue = gdkcolor.green = 0;
   else rgb_to_gdkcolor(ui.cur_brush->color_rgba, &gdkcolor);
   gtk_color_button_set_color(colorbutton, &gdkcolor);
-  if (ui.toolno[ui.cur_mapping] == TOOL_HIGHLIGHTER) {
+  if (ui.toolno[ui.cur_mapping] == TOOL_HIGHLIGHTER
+      || ui.toolno[ui.cur_mapping] == TOOL_SELECTTEXT) {
     gtk_color_button_set_alpha(colorbutton,
       (ui.cur_brush->color_rgba&0xff)*0x101);
     gtk_color_button_set_use_alpha(colorbutton, TRUE);
@@ -1051,7 +1055,9 @@ void update_ruler_indicator(void)
 void update_color_menu(void)
 {
   if (ui.selection!=NULL || (ui.toolno[ui.cur_mapping] != TOOL_PEN 
-    && ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER && ui.toolno[ui.cur_mapping] != TOOL_TEXT)) {
+    && ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER 
+    && ui.toolno[ui.cur_mapping] != TOOL_SELECTTEXT 
+    && ui.toolno[ui.cur_mapping] != TOOL_TEXT)) {
     gtk_check_menu_item_set_active(
       GTK_CHECK_MENU_ITEM(GET_COMPONENT("colorNA")), TRUE);
   } else
@@ -1174,6 +1180,24 @@ void update_highlighter_props_menu(void)
     case THICKNESS_THICK:
       gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(GET_COMPONENT("highlighterThick")), TRUE);
+      break;
+  }
+}
+
+void update_selecttext_props_menu(void)
+{
+  switch (ui.brushes[0][TOOL_SELECTTEXT].thickness_no) {
+    case THICKNESS_FINE:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("selecttextFine")), TRUE);
+      break;
+    case THICKNESS_MEDIUM:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("selecttextMedium")), TRUE);
+      break;
+    case THICKNESS_THICK:
+      gtk_check_menu_item_set_active(
+        GTK_CHECK_MENU_ITEM(GET_COMPONENT("selecttextThick")), TRUE);
       break;
   }
 }
@@ -1564,13 +1588,14 @@ void set_cur_color(int color_no, guint color_rgba)
   int which_mapping, tool;
   
   if (ui.toolno[ui.cur_mapping] == TOOL_HIGHLIGHTER) tool = TOOL_HIGHLIGHTER;
+  else if (ui.toolno[ui.cur_mapping] == TOOL_SELECTTEXT) tool = TOOL_SELECTTEXT;
   else tool = TOOL_PEN;
   if (ui.cur_mapping>0 && ui.linked_brush[ui.cur_mapping]!=BRUSH_LINKED)
     which_mapping = ui.cur_mapping;
   else which_mapping = 0;
 
   ui.brushes[which_mapping][tool].color_no = color_no;
-  if (tool == TOOL_HIGHLIGHTER && (color_rgba & 0xff) == 0xff)
+  if ((tool == TOOL_HIGHLIGHTER || tool == TOOL_SELECTTEXT) && (color_rgba & 0xff) == 0xff)
     ui.brushes[which_mapping][tool].color_rgba = color_rgba & ui.hiliter_alpha_mask;
   else
     ui.brushes[which_mapping][tool].color_rgba = color_rgba;
@@ -1620,7 +1645,7 @@ void process_color_activate(GtkMenuItem *menuitem, int color_no, guint color_rgb
   }
   
   if (ui.toolno[ui.cur_mapping] != TOOL_PEN && ui.toolno[ui.cur_mapping] != TOOL_HIGHLIGHTER
-      && ui.toolno[ui.cur_mapping] != TOOL_TEXT) {
+      && ui.toolno[ui.cur_mapping] != TOOL_TEXT && ui.toolno[ui.cur_mapping] != TOOL_SELECTTEXT) {
     if (ui.selection != NULL) return;
     ui.cur_mapping = 0;
     end_text();
@@ -1673,6 +1698,7 @@ void process_thickness_activate(GtkMenuItem *menuitem, int tool, int val)
   if (tool == TOOL_PEN) update_pen_props_menu();
   if (tool == TOOL_ERASER) update_eraser_props_menu();
   if (tool == TOOL_HIGHLIGHTER) update_highlighter_props_menu();
+  if (tool == TOOL_SELECTTEXT) update_selecttext_props_menu();
   update_cursor();
 }
 

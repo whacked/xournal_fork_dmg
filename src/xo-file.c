@@ -817,6 +817,26 @@ gboolean open_journal(char *filename)
     g_free(tmpfn);
     return valid;
   }
+
+  // <if no file.pdf.xoj, look for file.xoj>
+  // Fri Sep 23 16:45:56 EDT 2011
+  g_free(tmpfn);
+  tmpfn = g_strdup_printf("%s", filename);
+  int filenamelen = strlen(tmpfn);
+  tmpfn[filenamelen-3] = 'x';
+  tmpfn[filenamelen-2] = 'o';
+  tmpfn[filenamelen-1] = 'j';
+  // somehow this segfaults unless the g_str_has_suffix check is implemented
+  // no idea why, but don't want to figure out now
+  if (ui.autoload_pdf_xoj && g_file_test(tmpfn, G_FILE_TEST_EXISTS) &&
+      (g_str_has_suffix(filename, ".pdf") || g_str_has_suffix(filename, ".PDF")))
+  {
+    valid = open_journal(tmpfn);
+    g_free(tmpfn);
+    return valid;
+  }
+  // </if no file.pdf.xoj, look for file.xoj>
+
   g_free(tmpfn);
 
   f = gzopen(filename, "r");
@@ -1494,6 +1514,7 @@ void init_config_default(void)
   ui.brushes[0][TOOL_PEN].color_no = COLOR_BLACK;
   ui.brushes[0][TOOL_ERASER].color_no = COLOR_WHITE;
   ui.brushes[0][TOOL_HIGHLIGHTER].color_no = COLOR_YELLOW;
+  ui.brushes[0][TOOL_SELECTTEXT].color_no = COLOR_YELLOW;
   for (i=0; i < NUM_STROKE_TOOLS; i++) {
     ui.brushes[0][i].thickness_no = THICKNESS_MEDIUM;
     ui.brushes[0][i].tool_options = 0;
@@ -1712,6 +1733,22 @@ void save_config_to_file(void)
   update_keyval("tools", "highlighter_recognizer",
     _(" default highlighter is in shape recognizer mode (true/false)"),
     g_strdup(ui.default_brushes[TOOL_HIGHLIGHTER].recognizer?"true":"false"));
+
+  update_keyval("tools", "selecttext_color",
+    _(" default selecttext color"),
+    (ui.default_brushes[TOOL_SELECTTEXT].color_no>=0)?
+    g_strdup(color_names[ui.default_brushes[TOOL_SELECTTEXT].color_no]):
+    g_strdup_printf("#%08x", ui.default_brushes[TOOL_SELECTTEXT].color_rgba));
+  update_keyval("tools", "selecttext_thickness",
+    _(" default selecttext thickness (fine = 1, medium = 2, thick = 3)"),
+    g_strdup_printf("%d", ui.default_brushes[TOOL_SELECTTEXT].thickness_no));
+  update_keyval("tools", "selecttext_ruler",
+    _(" default selecttext is in ruler mode (true/false)"),
+    g_strdup(ui.default_brushes[TOOL_SELECTTEXT].ruler?"true":"false"));
+  update_keyval("tools", "selecttext_recognizer",
+    _(" default selecttext is in shape recognizer mode (true/false)"),
+    g_strdup(ui.default_brushes[TOOL_SELECTTEXT].recognizer?"true":"false"));
+
   update_keyval("tools", "btn2_tool",
     _(" button 2 tool (pen, eraser, highlighter, text, selectrect, vertspace, hand, selecttext)"),
     g_strdup(tool_names[ui.toolno[1]]));
@@ -2035,6 +2072,17 @@ void load_config_from_file(void)
   parse_keyval_int("tools", "highlighter_thickness", &(ui.brushes[0][TOOL_HIGHLIGHTER].thickness_no), 0, 4);
   parse_keyval_boolean("tools", "highlighter_ruler", &(ui.brushes[0][TOOL_HIGHLIGHTER].ruler));
   parse_keyval_boolean("tools", "highlighter_recognizer", &(ui.brushes[0][TOOL_HIGHLIGHTER].recognizer));
+  ui.brushes[0][TOOL_PEN].variable_width = ui.pressure_sensitivity;
+  for (i=0; i< NUM_STROKE_TOOLS; i++)
+    for (j=1; j<=NUM_BUTTONS; j++)
+      g_memmove(&(ui.brushes[j][i]), &(ui.brushes[0][i]), sizeof(struct Brush));
+
+  parse_keyval_enum_color("tools", "selecttext_color", 
+     &(ui.brushes[0][TOOL_SELECTTEXT].color_no), &(ui.brushes[0][TOOL_SELECTTEXT].color_rgba),
+     color_names, predef_colors_rgba, COLOR_MAX);
+  parse_keyval_int("tools", "selecttext_thickness", &(ui.brushes[0][TOOL_SELECTTEXT].thickness_no), 0, 4);
+  parse_keyval_boolean("tools", "selecttext_ruler", &(ui.brushes[0][TOOL_SELECTTEXT].ruler));
+  parse_keyval_boolean("tools", "selecttext_recognizer", &(ui.brushes[0][TOOL_SELECTTEXT].recognizer));
   ui.brushes[0][TOOL_PEN].variable_width = ui.pressure_sensitivity;
   for (i=0; i< NUM_STROKE_TOOLS; i++)
     for (j=1; j<=NUM_BUTTONS; j++)

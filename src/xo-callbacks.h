@@ -348,6 +348,18 @@ on_highlighterThick_activate           (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
 void
+on_selecttextFine_activate            (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
+on_selecttextMedium_activate          (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
+on_selecttextThick_activate           (GtkMenuItem     *menuitem,
+                                        gpointer         user_data);
+
+void
 on_toolsTextFont_activate              (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 

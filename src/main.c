@@ -113,7 +113,7 @@ void init_stuff (int argc, char *argv[])
       b->tool_type = i;
       if (b->color_no>=0) {
         b->color_rgba = predef_colors_rgba[b->color_no];
-        if (i == TOOL_HIGHLIGHTER) {
+        if (i == TOOL_HIGHLIGHTER || i == TOOL_SELECTTEXT) {
           b->color_rgba &= ui.hiliter_alpha_mask;
         }
       }

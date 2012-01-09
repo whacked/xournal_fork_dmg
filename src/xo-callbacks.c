@@ -1997,10 +1997,6 @@ void
 on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
-#ifdef PRINTF_DEBUG
-  printf("----------------- activated selectText ----------------\n");
-#endif
-
   if (GTK_OBJECT_TYPE(menuitem) == GTK_TYPE_RADIO_MENU_ITEM) {
     if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM (menuitem)))
       return;
@@ -2015,7 +2011,10 @@ on_toolsSelectText_activate       (GtkMenuItem     *menuitem,
   ui.cur_mapping = 0; // don't use switch_mapping() (refreshes buttons too soon)
   end_text(); // this is from copypasta of toolsSelectRectangle_activate, don't know how important, but it sets cur_item_type to TYPE_NONE
   ui.toolno[ui.cur_mapping] = TOOL_SELECTTEXT;
-  update_mapping_linkings(-1);
+  ui.cur_brush = &(ui.brushes[ui.cur_mapping][TOOL_SELECTTEXT]);
+  ui.cur_brush->ruler = ui.default_brushes[TOOL_SELECTTEXT].ruler;
+  ui.cur_brush->recognizer = ui.default_brushes[TOOL_SELECTTEXT].recognizer;
+  update_mapping_linkings(TOOL_SELECTTEXT);
   update_tool_buttons();
   update_tool_menu();
   update_color_menu();
@@ -2264,6 +2263,30 @@ on_highlighterThick_activate           (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
   process_thickness_activate(menuitem, TOOL_HIGHLIGHTER, THICKNESS_THICK);
+}
+
+
+void
+on_selecttextFine_activate            (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  process_thickness_activate(menuitem, TOOL_SELECTTEXT, THICKNESS_FINE);
+}
+
+
+void
+on_selecttextMedium_activate          (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  process_thickness_activate(menuitem, TOOL_SELECTTEXT, THICKNESS_MEDIUM);
+}
+
+
+void
+on_selecttextThick_activate           (GtkMenuItem     *menuitem,
+                                        gpointer         user_data)
+{
+  process_thickness_activate(menuitem, TOOL_SELECTTEXT, THICKNESS_THICK);
 }
 
 

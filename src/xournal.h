@@ -5,7 +5,8 @@
 // #define PRINTF_DEBUG
 /* uncomment to activate printf everywhere because I'm n00b */
 
-#define INPUT_DEBUG
+// with this enabled, paint refresh becomes very slow!
+// #define INPUT_DEBUG
 /* uncomment this line if you experience event-processing problems
    and want to list the input events received by xournal. Caution, lots
    of output (redirect to a file). */
@@ -130,7 +131,7 @@ extern guint predef_bgcolors_rgba[COLOR_MAX];
 
 #define TOOL_SELECTTEXT   9
 
-#define NUM_STROKE_TOOLS  3
+#define NUM_STROKE_TOOLS  4
 #define NUM_TOOLS         9
 #define NUM_BUTTONS       3
 
