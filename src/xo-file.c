@@ -195,8 +195,36 @@ gboolean save_journal(const char *filename)
       for (itemlist = layer->items; itemlist!=NULL; itemlist = itemlist->next) {
         item = (struct Item *)itemlist->data;
         if (item->type == ITEM_STROKE) {
-          gzprintf(f, "<stroke tool=\"%s\" color=\"", 
-                          tool_names[item->brush.tool_type]);
+            // HACK HACK HACK Sat Jan 14 01:45:35 EST 2012
+            /***
+             * it turns out the storage of brush parameters for STROKE tools is
+             * done through looping through NUM_STROKE_TOOLS. NUM_STROKE_TOOLS
+             * used to == 3, corresponding to pen, highlighter, text supposedly
+             * then, SELECTTEXT should have been listed right after HIGHLIGHTER
+             * in the #define section in xournal.h we didn't do this (making
+             * SELECTTEXT 9), causing it to (my guess) overflow, probably so:
+             *    SELECTTEXT is defined with 9; NUM_STROKE_TOOLS is int[4], so:
+             *    [0 1 2 3 4 5 6 7 8 9] <-- loop through tools array until 9
+             *    [0 1 2 3 0 1 2 3 0 1] <-- loop over twice + 1?
+             * whatever. the result is SELECTTEXT gets written out as "eraser"
+             * (tool index == 1 above).  I have tried (successfully) to reorder
+             * the tools in xournal.h, #define TOOL_SELECTTEXT 3, and bumping
+             * TEXT and everything up. not sure how to tweak the ui while
+             * preserving the array index, because I did have to move the
+             * selecttext button to follow highlighter, which was ugly. So
+             * resort to this hack.  (the other side effect of a "successful"
+             * reindex is that stroke tool="selecttext" becomes one of the
+             * legal tool names...  compatibility be damned) so we're expedient
+             * here, if a STROKE & ERASER is detected, turn it into a
+             * highlighter.  xournal actually renders colored ERASER strokes,
+             * they're just not translucent. i want my translucent boxes.
+             */
+            if (item->brush.tool_type == TOOL_ERASER) {
+              gzprintf(f, "<stroke tool=\"highlighter\" color=\"");
+            } else {
+              gzprintf(f, "<stroke tool=\"%s\" color=\"", 
+                              tool_names[item->brush.tool_type]);
+            }
           if (item->brush.color_no >= 0)
             gzputs(f, color_names[item->brush.color_no]);
           else
