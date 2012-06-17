@@ -1162,6 +1162,8 @@ gboolean bgpdf_scheduler_callback(gpointer data)
   PopplerPage *pdfpage;
   gdouble height, width;
   int scaled_height, scaled_width;
+  GdkPixmap *pixmap;
+  cairo_t *cr;
 
   // if all requests have been cancelled, remove ourselves from main loop
   if (bgpdf.requests == NULL) { bgpdf.pid = 0; return FALSE; }
@@ -1179,11 +1181,27 @@ gboolean bgpdf_scheduler_callback(gpointer data)
     poppler_page_get_size(pdfpage, &width, &height);
     scaled_width = (int) (req->dpi * width/72);
     scaled_height = (int) (req->dpi * height/72);
-    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
-                FALSE, 8, scaled_width, scaled_height);
-    poppler_page_render_to_pixbuf(
+
+    // if(ui.poppler_force_cairo)
+    if (1) { // poppler -> cairo -> pixmap -> pixbuf
+      pixmap = gdk_pixmap_new(GTK_WIDGET(canvas)->window, scaled_width, scaled_height, -1);
+      cr = gdk_cairo_create(pixmap);
+      cairo_set_source_rgb(cr, 1., 1., 1.);
+      cairo_paint(cr);
+      cairo_scale(cr, scaled_width/width, scaled_height/height);
+      poppler_page_render(pdfpage, cr);
+      cairo_destroy(cr);
+      pixbuf = gdk_pixbuf_get_from_drawable(NULL, GDK_DRAWABLE(pixmap),
+        NULL, 0, 0, 0, 0, scaled_width, scaled_height);
+      g_object_unref(pixmap);
+    }
+    else { // directly poppler -> pixbuf: faster, but bitmap font bug
+      pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
+                 FALSE, 8, scaled_width, scaled_height);
+      wrapper_poppler_page_render_to_pixbuf(
                 pdfpage, 0, 0, scaled_width, scaled_height,
                 req->dpi/72, 0, pixbuf);
+    }
     g_object_unref(pdfpage);
     set_cursor_busy(FALSE);
   }
